@@ -29,6 +29,9 @@ Sub ConflictResolver3()
 ' - So, when changes are made, red would change to green
 ' - Entry 1 and 2 are not modified; Comparison Sheet can be regenerated anytime
 '
+' Caveat:
+' - Other matching errors between entries 1 and 2 will also be highlighted
+'
     Dim entry1()
     Dim entry2()
     Dim i As Long
