@@ -8,7 +8,7 @@
 ' - Select the appropriate macro and press Run
 
 Sub ConflictResolver3()
-    ' Conflict resolution macro (version 3)
+' Conflict resolution macro (version 3)
 '
 ' Preconditions:
 ' - The 2 spreadsheets to be compared are the 1st and 2nd in a Workbook
