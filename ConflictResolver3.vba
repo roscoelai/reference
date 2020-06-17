@@ -64,6 +64,7 @@ Sub ConflictResolver3()
                         .Value = "#N/A"
                         .AddComment "Entry 1: '" & entry1(i, j) & "'" & Chr(10) & _
                                     "Entry 2: '" & entry2(i, j) & "'"
+                        .comment.Shape.TextFrame.AutoSize = True
                         .Font.Color = RGB(0, 97, 0)  ' Dark green
                         .Interior.Color = RGB(198, 239, 206)  ' Light green
                     End With
