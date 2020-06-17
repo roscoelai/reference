@@ -8,7 +8,7 @@
 ' - Select the appropriate macro and press Run
 
 Sub ConflictResolver3()
-' Conflict resolution macro
+    ' Conflict resolution macro (version 3)
 '
 ' Preconditions:
 ' - The 2 spreadsheets to be compared are the 1st and 2nd in a Workbook
@@ -29,8 +29,9 @@ Sub ConflictResolver3()
 ' - So, when changes are made, red would change to green
 ' - Entry 1 and 2 are not modified; Comparison Sheet can be regenerated anytime
 '
-' Caveat:
+' Caveats:
 ' - Other matching errors between entries 1 and 2 will also be highlighted
+'   - This may not be a bad thing
 '
     Dim entry1()
     Dim entry2()
@@ -38,6 +39,8 @@ Sub ConflictResolver3()
     Dim j As Long
     Dim nrows As Long
     Dim ncols As Long
+    Dim content As String
+    Dim choices As String
     
     ' Read 1st and 2nd entry sheets into memory
     entry1 = Sheets(1).UsedRange.Value
@@ -56,17 +59,24 @@ Sub ConflictResolver3()
         ' Compare 1st and 2nd entries to find cells with mismatches
         For i = 1 To nrows
             For j = 1 To ncols
-                ' If there are mismatches, overwrite the cell value with "#N/A"
+                ' If there are mismatches, overwrite cell value with "#N/A"
                 ' Add a comment with the 1st and 2nd entry values
                 ' Give the cell an unconditional green color
                 If entry1(i, j) <> entry2(i, j) Then
+                    content = "Entry 1: '" & entry1(i, j) & "'" & Chr(10) & _
+                              "Entry 2: '" & entry2(i, j) & "'"
+                    choices = entry1(i, j) & "," & entry2(i, j)
                     With .Cells(i, j)
                         .Value = "#N/A"
-                        .AddComment "Entry 1: '" & entry1(i, j) & "'" & Chr(10) & _
-                                    "Entry 2: '" & entry2(i, j) & "'"
+                        .AddComment content
                         .comment.Shape.TextFrame.AutoSize = True
                         .Font.Color = RGB(0, 97, 0)  ' Dark green
                         .Interior.Color = RGB(198, 239, 206)  ' Light green
+                        With .Validation
+                            .Add Type:=xlValidateList, Formula1:=choices
+                            .ShowInput = False
+                            .ShowError = False
+                        End With
                     End With
                 End If
             Next j
