@@ -2,20 +2,23 @@
 # cronbachs-alpha-nodep.py
 
 #%% import-libraries
+from itertools import filterfalse
 from math import isnan
 from statistics import variance
-from typing import List
+from time import perf_counter
+from typing import List, Union
 
-#%% define-function
-def cronbach_alpha(rows: List[list]) -> float:
+#%% define-functions
+Number = Union[int, float]
+
+def cronbach_alpha(rows: List[List[Number]]) -> float:
     """
     Calculate Cronbach's alpha.
 
     Parameters
     ----------
-    rows : List[list]
-        A table (list of lists) of numeric values. Each inner list 
-        represents a row.
+    rows : List[List[Number]]
+        A list of lists. Each inner list represents a row in a table.
 
     Returns
     -------
@@ -31,23 +34,18 @@ def cronbach_alpha(rows: List[list]) -> float:
     >>> round(cronbach_alpha([[1, 1], [1, float("nan")], [1, 3]]), 6)
     0.285714
     """
-    cols = [*zip(*rows)]
-    
-    colvars = [variance(x for x in col if not isnan(x)) for col in cols]
-    rowsums = [sum(x for x in row if not isnan(x)) for row in rows]
-    
-    k = len(cols)
-    sum_of_variances = sum(colvars)
-    variance_of_sums = variance(rowsums)
-    
-    alpha = k / (k - 1) * (1 - (sum_of_variances / variance_of_sums))
-    
-    return alpha
+    k = len(rows[0])
+    colvars = (variance(filterfalse(isnan, col)) for col in zip(*rows))
+    rowsums = (sum(filterfalse(isnan, row)) for row in rows)
+    return (1 - (sum(colvars) / variance(rowsums))) * k / (k - 1)
 
 #%% main
 def main():
     import doctest
+    t1 = perf_counter()
     doctest.testmod(verbose=True)
+    t2 = perf_counter()
+    print("Time taken: {:.6f} sec".format(t2 - t1))
 
 if __name__ == "__main__":
     main()

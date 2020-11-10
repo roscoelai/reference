@@ -1,8 +1,14 @@
-import numpy as np
+#!/usr/bin/env python3
+# cronbachs-alpha-mindep.py
 
+#%% import-libraries
+import numpy as np
+from time import perf_counter
+
+#%% define-functions
 def cronbach_alpha(X: np.ndarray) -> float:
     """
-    Calculates Cronbach's alpha.
+    Calculate Cronbach's alpha.
 
     :param X: a matrix of numerical values
     :returns: Cronbach's alpha
@@ -16,22 +22,20 @@ def cronbach_alpha(X: np.ndarray) -> float:
 
     >>> np.random.seed(123); cronbach_alpha(np.random.randint(0, 5, (30, 5)))
     0.1763577331759146
-
     """
     A = np.array(X)
-    ncols = A.shape[1]
+    k = A.shape[1]
+    colvars = np.nanvar(A, axis=0, ddof=1)
+    rowsums = np.nansum(A, axis=1)
+    return (1 - (np.sum(colvars) / np.var(rowsums, ddof=1))) * k / (k - 1)
 
-    variances_of_columns = np.nanvar(A, axis=0, ddof=1)
-    sums_of_rows = np.nansum(A, axis=1)
-
-    sum_of_variances = np.sum(variances_of_columns)
-    variance_of_sums = np.var(sums_of_rows, ddof=1)
-
-    prealpha = 1 - (sum_of_variances / variance_of_sums)
-    alpha = ncols / (ncols - 1) * prealpha
-
-    return alpha
+#%% main
+def main():
+    import doctest
+    t1 = perf_counter()
+    doctest.testmod(verbose=True)
+    t2 = perf_counter()
+    print("Time taken: {:.6f} sec".format(t2 - t1))
 
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod(verbose=True)
+    main()
