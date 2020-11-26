@@ -55,13 +55,33 @@ read.xlsx.all <- function(filepath, ...) {
 
 ```r
 pretty.cbind <- function(...) tibble::as_tibble(cbind(...))
+
 pretty.merge <- function(...) tibble::as_tibble(merge(...))
+
+wide2long <- function(df, value = "value", name = "name", idvar = NULL) {
+  if (is.null(idvar)) idvar <- names(df)[1]
+  n.idvars <- setdiff(names(df), idvar)
+  
+  df <- reshape(
+    data = as.data.frame(df), 
+    varying = n.idvars, 
+    v.names = value, 
+    timevar = name, 
+    idvar = idvar, 
+    times = n.idvars, 
+    direction = "long"
+  )
+  
+  df <- tibble::as_tibble(df)
+  df
+}
 ```
 
 #### Hope we never have to use these...
 
 ```r
 xlsx.date <- function(x) as.Date(x, origin = "1899-12-30")
+
 xlsx.datetime <- function(x) as.POSIXct(x * 86400, origin = "1899-12-30", tz = "GMT")
 ```
 
