@@ -6,9 +6,11 @@
 
 ```r
 get.filepaths <- function(..., prefix = NULL) {
+  only.filepaths <- function(x) x <- x[!file.info(x)$isdir]
+  
   folderpaths <- unlist(list(...))
   if (!is.null(prefix)) folderpaths <- file.path(prefix, folderpaths)
-  list.files(folderpaths, full.names = TRUE)
+  only.filepaths(list.files(folderpaths, full.names = TRUE))
 }
 ```
 
@@ -27,7 +29,7 @@ outer.rbind <- function(...) {
 #### Filter all duplicated values
 
 ```r
-all.duplicated <- function(x) x[duplicated(x) | duplicated(x, fromLast=TRUE)]
+all.duplicated <- function(x) duplicated(x) | duplicated(x, fromLast=TRUE)
 ```
 
 #### Forward fill
@@ -39,27 +41,27 @@ ffill <- function(x) {
 }
 ```
 
-#### Read all sheets in an Excel Workbook
+#### Replace/Rename
 
 ```r
-read.xlsx.all <- function(filepath, ...) {
-  sheetnames <- readxl::excel_sheets(filepath)
-  sheetnames <- setNames(sheetnames, sheetnames)
-  lapply(sheetnames, function(sheetname) {
-    readxl::read_xlsx(filepath, sheet = sheetname, ...)
-  })
+replace.map <- function(x, mapping) {
+  mask <- x %in% names(mapping)
+  x[mask] <- mapping[x[mask]]
+  x
+}
+
+rename.map <- function(x, mapping) {
+  names(x) <- replace.all(names(x), mapping)
+  x
 }
 ```
 
-#### Wrappers
+#### Reshape
 
 ```r
-pretty.cbind <- function(...) tibble::as_tibble(cbind(...))
+library(tibble)
 
-pretty.merge <- function(...) tibble::as_tibble(merge(...))
-
-wide2long <- function(df, value = "value", name = "name", idvar = NULL) {
-  if (is.null(idvar)) idvar <- names(df)[1]
+wide2long <- function(df, idvar, name = "name", value = "value") {
   n.idvars <- setdiff(names(df), idvar)
   
   df <- reshape(
@@ -75,6 +77,43 @@ wide2long <- function(df, value = "value", name = "name", idvar = NULL) {
   df <- tibble::as_tibble(df)
   df
 }
+
+long2wide <- function(df, idvar, groups, sep = '.') {
+  df <- reshape(
+    data = as.data.frame(df), 
+    timevar = groups, 
+    idvar = idvar, 
+    direction = "wide", 
+    sep = sep
+  )
+  
+  df <- tibble::as_tibble(df)
+  df
+}
+```
+
+#### Read all sheets in an Excel Workbook
+
+```r
+library(readxl)
+
+read.xlsx.all <- function(filepath, ...) {
+  sheetnames <- readxl::excel_sheets(filepath)
+  sheetnames <- setNames(sheetnames, sheetnames)
+  lapply(sheetnames, function(sheetname) {
+    readxl::read_xlsx(filepath, sheet = sheetname, ...)
+  })
+}
+```
+
+#### Wrappers
+
+```r
+library(tibble)
+
+pretty.cbind <- function(...) tibble::as_tibble(cbind(...))
+
+pretty.merge <- function(...) tibble::as_tibble(merge(...))
 ```
 
 #### Hope we never have to use these...
