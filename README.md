@@ -6,11 +6,11 @@
 
 ```r
 get.filepaths <- function(..., prefix = NULL) {
-  only.filepaths <- function(x) x <- x[!file.info(x)$isdir]
+  only.files <- function(x) x <- x[!file.info(x)$isdir]
   
   folderpaths <- unlist(list(...))
   if (!is.null(prefix)) folderpaths <- file.path(prefix, folderpaths)
-  only.filepaths(list.files(folderpaths, full.names = TRUE))
+  only.files(list.files(folderpaths, full.names = TRUE))
 }
 ```
 
@@ -36,8 +36,8 @@ all.duplicated <- function(x) duplicated(x) | duplicated(x, fromLast=TRUE)
 
 ```r
 ffill <- function(x) {
-  notna <- which(!is.na(x))
-  rep(x[notna], times = diff(c(notna, length(x) + 1)))
+  notna.idx <- which(!is.na(x))
+  rep(x[notna.idx], times = diff(c(notna.idx, length(x) + 1)))
 }
 ```
 
@@ -61,30 +61,32 @@ rename.map <- function(x, mapping) {
 ```r
 library(tibble)
 
-wide2long <- function(df, idvar, name = "name", value = "value") {
+wide2long <- function(df, idvar, name = "name", value = "value", ...) {
   n.idvars <- setdiff(names(df), idvar)
   
   df <- reshape(
-    data = as.data.frame(df), 
-    varying = n.idvars, 
-    v.names = value, 
-    timevar = name, 
-    idvar = idvar, 
-    times = n.idvars, 
-    direction = "long"
+    data = as.data.frame(df),
+    varying = n.idvars,
+    v.names = value,
+    timevar = name,
+    idvar = idvar,
+    times = n.idvars,
+    direction = "long",
+    ...
   )
   
   df <- tibble::as_tibble(df)
   df
 }
 
-long2wide <- function(df, idvar, groups, sep = '.') {
+long2wide <- function(df, idvar, groups, sep = '.', ...) {
   df <- reshape(
-    data = as.data.frame(df), 
-    timevar = groups, 
-    idvar = idvar, 
-    direction = "wide", 
-    sep = sep
+    data = as.data.frame(df),
+    timevar = groups,
+    idvar = idvar,
+    direction = "wide",
+    sep = sep,
+    ...
   )
   
   df <- tibble::as_tibble(df)
@@ -106,7 +108,25 @@ read.xlsx.all <- function(filepath, ...) {
 }
 ```
 
-#### Wrappers
+#### Save one Excel Workbook
+
+```r
+library(openxlsx)
+
+save.one.xlsx <- function(dfs, filepath, firstActiveCol = 2, ...) {
+  openxlsx::write.xlsx(
+    dfs,
+    file = filepath,
+    headerStyle = openxlsx::createStyle(textDecoration = "bold"),
+    firstActiveRow = 2,
+    firstActiveCol = firstActiveCol,
+    colWidths = "auto",
+    ...
+  )
+}
+```
+
+#### Other wrappers
 
 ```r
 library(tibble)
@@ -119,9 +139,13 @@ pretty.merge <- function(...) tibble::as_tibble(merge(...))
 #### Hope we never have to use these...
 
 ```r
-xlsx.date <- function(x) as.Date(x, origin = "1899-12-30")
+xlsx.date <- function(x) {
+  as.Date(x, origin = "1899-12-30")
+}
 
-xlsx.datetime <- function(x) as.POSIXct(x * 86400, origin = "1899-12-30", tz = "GMT")
+xlsx.datetime <- function(x) {
+  as.POSIXct(x * 86400, origin = "1899-12-30", tz = "GMT")
+}
 ```
 
 #### Why is this here? Nvm, remove after leveling up...
