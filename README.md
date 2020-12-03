@@ -6,7 +6,7 @@
 
 ```r
 get.filepaths <- function(..., prefix = NULL) {
-  only.files <- function(x) x <- x[!file.info(x)$isdir]
+  only.files <- function(x) x[!file.info(x)$isdir]
   
   folderpaths <- unlist(list(...))
   if (!is.null(prefix)) folderpaths <- file.path(prefix, folderpaths)
