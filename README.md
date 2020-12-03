@@ -51,7 +51,7 @@ replace.map <- function(x, mapping) {
 }
 
 rename.map <- function(x, mapping) {
-  names(x) <- replace.all(names(x), mapping)
+  names(x) <- replace.map(names(x), mapping)
   x
 }
 ```
