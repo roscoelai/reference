@@ -5,12 +5,12 @@
 #### Get all filepaths from specified folder(s)
 
 ```r
-get.filepaths <- function(..., prefix = NULL) {
-  only.files <- function(x) x[!file.info(x)$isdir]
-  
-  folderpaths <- unlist(list(...))
-  if (!is.null(prefix)) folderpaths <- file.path(prefix, folderpaths)
-  only.files(list.files(folderpaths, full.names = TRUE))
+get.filepaths <- function(...) {
+  flds <- unlist(list(...))
+  setdiff(
+    list.files(flds, full.names = TRUE),
+    list.dirs(flds, full.names = TRUE, recursive = FALSE)
+  )
 }
 ```
 
@@ -50,10 +50,10 @@ replace.map <- function(x, mapping) {
   x
 }
 
-rename.map <- function(x, mapping) {
-  names(x) <- replace.map(names(x), mapping)
-  x
-}
+# rename.map <- function(x, mapping) {
+#   names(x) <- replace.map(names(x), mapping)
+#   x
+# }
 ```
 
 #### Reshape
