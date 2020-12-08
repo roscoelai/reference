@@ -129,11 +129,20 @@ save.one.xlsx <- function(dfs, filepath, firstActiveCol = 2, ...) {
 #### Other wrappers
 
 ```r
+library(openxlsx)
+library(readxl)
 library(tibble)
+
+tib <- tibble::as_tibble
 
 pretty.cbind <- function(...) tibble::as_tibble(cbind(...))
 
 pretty.merge <- function(...) tibble::as_tibble(merge(...))
+
+xread <- function(...) {
+  data.table::as.data.table(readxl::read_xlsx(...))
+  # data.table::as.data.table(openxlsx::read.xlsx(...))
+}
 ```
 
 #### Hope we never have to use these...
