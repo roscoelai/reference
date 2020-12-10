@@ -2,6 +2,21 @@
 
 ### R
 
+#### Filter all duplicated values
+
+```r
+all.duplicated <- function(x) duplicated(x) | duplicated(x, fromLast=TRUE)
+```
+
+#### Forward fill
+
+```r
+ffill <- function(x) {
+  notna.idx <- which(!is.na(x))
+  rep(x[notna.idx], times = diff(c(notna.idx, length(x) + 1)))
+}
+```
+
 #### Get all filepaths from specified folder(s)
 
 ```r
@@ -26,22 +41,7 @@ outer.rbind <- function(...) {
 }
 ```
 
-#### Filter all duplicated values
-
-```r
-all.duplicated <- function(x) duplicated(x) | duplicated(x, fromLast=TRUE)
-```
-
-#### Forward fill
-
-```r
-ffill <- function(x) {
-  notna.idx <- which(!is.na(x))
-  rep(x[notna.idx], times = diff(c(notna.idx, length(x) + 1)))
-}
-```
-
-#### Replace/Rename
+#### Replace with named vector
 
 ```r
 replace.map <- function(x, mapping) {
@@ -49,11 +49,6 @@ replace.map <- function(x, mapping) {
   x[mask] <- mapping[x[mask]]
   x
 }
-
-# rename.map <- function(x, mapping) {
-#   names(x) <- replace.map(names(x), mapping)
-#   x
-# }
 ```
 
 #### Reshape
@@ -64,7 +59,7 @@ library(tibble)
 wide2long <- function(df, idvar, name = "name", value = "value", ...) {
   n.idvars <- setdiff(names(df), idvar)
   
-  df <- reshape(
+  reshape(
     data = as.data.frame(df),
     varying = n.idvars,
     v.names = value,
@@ -74,13 +69,10 @@ wide2long <- function(df, idvar, name = "name", value = "value", ...) {
     direction = "long",
     ...
   )
-  
-  df <- tibble::as_tibble(df)
-  df
 }
 
 long2wide <- function(df, idvar, groups, sep = '.', ...) {
-  df <- reshape(
+  reshape(
     data = as.data.frame(df),
     timevar = groups,
     idvar = idvar,
@@ -88,41 +80,18 @@ long2wide <- function(df, idvar, groups, sep = '.', ...) {
     sep = sep,
     ...
   )
-  
-  df <- tibble::as_tibble(df)
-  df
 }
 ```
 
-#### Read all sheets in an Excel Workbook
+#### Datetime conversion
 
 ```r
-library(readxl)
-
-read.xlsx.all <- function(filepath, ...) {
-  sheetnames <- readxl::excel_sheets(filepath)
-  sheetnames <- setNames(sheetnames, sheetnames)
-  lapply(sheetnames, function(sheetname) {
-    readxl::read_xlsx(filepath, sheet = sheetname, ...)
-  })
+xlsx.date <- function(x) {
+  as.Date(x, origin = "1899-12-30")
 }
-```
 
-#### Save one Excel Workbook
-
-```r
-library(openxlsx)
-
-save.one.xlsx <- function(dfs, filepath, firstActiveCol = 2, ...) {
-  openxlsx::write.xlsx(
-    dfs,
-    file = filepath,
-    headerStyle = openxlsx::createStyle(textDecoration = "bold"),
-    firstActiveRow = 2,
-    firstActiveCol = firstActiveCol,
-    colWidths = "auto",
-    ...
-  )
+xlsx.datetime <- function(x) {
+  as.POSIXct(x * 86400, origin = "1899-12-30", tz = "GMT")
 }
 ```
 
@@ -135,30 +104,28 @@ library(tibble)
 
 tib <- tibble::as_tibble
 
-pretty.cbind <- function(...) tibble::as_tibble(cbind(...))
-
-pretty.merge <- function(...) tibble::as_tibble(merge(...))
-
 xread <- function(...) {
   data.table::as.data.table(readxl::read_xlsx(...))
   # data.table::as.data.table(openxlsx::read.xlsx(...))
 }
-```
 
-#### Hope we never have to use these...
-
-```r
-xlsx.date <- function(x) {
-  as.Date(x, origin = "1899-12-30")
+xread_all <- function(filepath, ...) {
+  sheetnames <- readxl::excel_sheets(filepath)
+  sheetnames <- setNames(sheetnames, sheetnames)
+  lapply(sheetnames, function(sheetname) {
+    xread(filepath, sheet = sheetname, ...)
+  })
 }
 
-xlsx.datetime <- function(x) {
-  as.POSIXct(x * 86400, origin = "1899-12-30", tz = "GMT")
+save.one.xlsx <- function(dfs, filepath, firstActiveCol = 2, ...) {
+  openxlsx::write.xlsx(
+    dfs,
+    file = filepath,
+    headerStyle = openxlsx::createStyle(textDecoration = "bold"),
+    firstActiveRow = 2,
+    firstActiveCol = firstActiveCol,
+    colWidths = "auto",
+    ...
+  )
 }
-```
-
-#### Why is this here? Nvm, remove after leveling up...
-
-```r
-join.lists <- function(...) do.call(c, ...)
 ```
