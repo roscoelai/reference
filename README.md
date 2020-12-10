@@ -29,18 +29,6 @@ get.filepaths <- function(...) {
 }
 ```
 
-#### 'Union' `rbind` for dataframes that do not have matching columns
-
-```r
-outer.rbind <- function(...) {
-  Reduce(function(x, y) {
-    x[setdiff(names(y), names(x))] <- NA
-    y[setdiff(names(x), names(y))] <- NA
-    rbind(x, y)
-  }, ...)
-}
-```
-
 #### Replace with named vector
 
 ```r
@@ -48,6 +36,52 @@ replace.map <- function(x, mapping) {
   mask <- x %in% names(mapping)
   x[mask] <- mapping[x[mask]]
   x
+}
+```
+
+#### Dealing with Excel files
+
+```r
+library(data.table)
+library(openxlsx)
+# library(readxl)
+
+xlsx.date <- function(x) {
+  as.Date(x, origin = "1899-12-30")
+}
+
+xlsx.datetime <- function(x) {
+  as.POSIXct(x * 86400, origin = "1899-12-30", tz = "GMT")
+}
+
+xread <- function(...) {
+  # data.table::as.data.table(readxl::read_xlsx(...))
+  data.table::as.data.table(openxlsx::read.xlsx(...))
+}
+
+xread.all <- function(filepath, ...) {
+  # sheetnames <- readxl::excel_sheets(filepath)
+  sheetnames <- openxlsx::getSheetNames(filepath)
+  sheetnames <- setNames(sheetnames, sheetnames)
+  lapply(sheetnames, function(sheetname) {
+    xread(filepath, sheet = sheetname, ...)
+  })
+}
+
+myxread.all <- function(filepath, ...) {
+  xread.all(filepath, ..., startRow = 2, na.strings = c('-', "No Date"))
+}
+
+save.one.xlsx <- function(DTs, filepath, firstActiveCol = 2, ...) {
+  openxlsx::write.xlsx(
+    DTs,
+    file = filepath,
+    headerStyle = openxlsx::createStyle(textDecoration = "bold"),
+    firstActiveRow = 2,
+    firstActiveCol = firstActiveCol,
+    colWidths = "auto",
+    ...
+  )
 }
 ```
 
@@ -83,49 +117,14 @@ long2wide <- function(df, idvar, groups, sep = '.', ...) {
 }
 ```
 
-#### Datetime conversion
+#### 'Union' `rbind` for dataframes that do not have matching columns
 
 ```r
-xlsx.date <- function(x) {
-  as.Date(x, origin = "1899-12-30")
-}
-
-xlsx.datetime <- function(x) {
-  as.POSIXct(x * 86400, origin = "1899-12-30", tz = "GMT")
-}
-```
-
-#### Other wrappers
-
-```r
-library(openxlsx)
-library(readxl)
-library(tibble)
-
-tib <- tibble::as_tibble
-
-xread <- function(...) {
-  data.table::as.data.table(readxl::read_xlsx(...))
-  # data.table::as.data.table(openxlsx::read.xlsx(...))
-}
-
-xread_all <- function(filepath, ...) {
-  sheetnames <- readxl::excel_sheets(filepath)
-  sheetnames <- setNames(sheetnames, sheetnames)
-  lapply(sheetnames, function(sheetname) {
-    xread(filepath, sheet = sheetname, ...)
-  })
-}
-
-save.one.xlsx <- function(dfs, filepath, firstActiveCol = 2, ...) {
-  openxlsx::write.xlsx(
-    dfs,
-    file = filepath,
-    headerStyle = openxlsx::createStyle(textDecoration = "bold"),
-    firstActiveRow = 2,
-    firstActiveCol = firstActiveCol,
-    colWidths = "auto",
-    ...
-  )
+outer.rbind <- function(...) {
+  Reduce(function(x, y) {
+    x[setdiff(names(y), names(x))] <- NA
+    y[setdiff(names(x), names(y))] <- NA
+    rbind(x, y)
+  }, ...)
 }
 ```
