@@ -68,10 +68,6 @@ xread.all <- function(filepath, ...) {
   })
 }
 
-myxread.all <- function(filepath, ...) {
-  xread.all(filepath, ..., startRow = 2, na.strings = c('-', "No Date"))
-}
-
 save.one.xlsx <- function(DTs, filepath, firstActiveCol = 2, ...) {
   openxlsx::write.xlsx(
     DTs,
@@ -82,6 +78,35 @@ save.one.xlsx <- function(DTs, filepath, firstActiveCol = 2, ...) {
     colWidths = "auto",
     ...
   )
+}
+```
+
+#### SQLite
+
+```r
+library(DBI)
+library(RSQLite)
+
+dbread.all <- function(filepath) {
+  con <- DBI::dbConnect(RSQLite::SQLite(), filepath)
+  
+  tables <- DBI::dbListTables(con)
+  tables <- setNames(tables, tables)
+  tables <- lapply(tables, function(table) DBI::dbReadTable(con, table))
+  
+  DBI::dbDisconnect(con)
+  
+  tables
+}
+
+dbwrite.all <- function(DTs, filepath, ...) {
+  con <- DBI::dbConnect(RSQLite::SQLite(), filepath)
+  
+  mapply(function(name, DT) {
+    DBI::dbWriteTable(con, name, DT, ...)
+  }, names(DTs), DTs)
+  
+  DBI::dbDisconnect(con)
 }
 ```
 
