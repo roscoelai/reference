@@ -90,13 +90,13 @@ library(RSQLite)
 dbread.all <- function(filepath) {
   con <- DBI::dbConnect(RSQLite::SQLite(), filepath)
   
-  tables <- DBI::dbListTables(con)
-  tables <- setNames(tables, tables)
-  tables <- lapply(tables, function(table) DBI::dbReadTable(con, table))
+  tbls <- DBI::dbListTables(con)
+  tbls <- setNames(tbls, tbls)
+  tbls <- lapply(tbls, function(tbl) DBI::dbReadTable(con, tbl))
   
   DBI::dbDisconnect(con)
   
-  tables
+  tbls
 }
 
 dbwrite.all <- function(DTs, filepath, ...) {
@@ -110,11 +110,38 @@ dbwrite.all <- function(DTs, filepath, ...) {
 }
 ```
 
+#### Message box
+
+```r
+library(tcltk)
+
+msgbox <- function(title, message, icon = "info", type = "ok", ...) {
+  tcltk::tkmessageBox(
+    title = title,
+    message = message,
+    icon = icon,
+    type = type,
+    ...
+  )
+}
+```
+
+#### Whitespace to CSV
+
+```r
+library(data.table)
+library(tools)
+
+whitespace.to.csv <- function(filepath) {
+  DT <- data.table::fread(filepath, header = TRUE)
+  new.filepath <- paste0(tools::file_path_sans_ext(filepath), ".csv")
+  data.table::fwrite(DT, new.filepath)
+}
+```
+
 #### Reshape
 
 ```r
-library(tibble)
-
 wide2long <- function(df, idvar, name = "name", value = "value", ...) {
   n.idvars <- setdiff(names(df), idvar)
   
