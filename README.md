@@ -68,7 +68,7 @@ xread.all <- function(filepath, ...) {
   })
 }
 
-save.one.xlsx <- function(DTs, filepath, firstActiveCol = 2, ...) {
+write.one.xlsx <- function(DTs, filepath, firstActiveCol = 2, ...) {
   openxlsx::write.xlsx(
     DTs,
     file = filepath,
@@ -87,10 +87,11 @@ save.one.xlsx <- function(DTs, filepath, firstActiveCol = 2, ...) {
 library(DBI)
 library(RSQLite)
 
-dbread.all <- function(filepath) {
+dbread.tbls <- function(filepath, tables = NULL) {
   con <- DBI::dbConnect(RSQLite::SQLite(), filepath)
   
-  tbls <- DBI::dbListTables(con)
+  if (is.null(tables)) tbls <- DBI::dbListTables(con) else tbls <- tables
+  
   tbls <- setNames(tbls, tbls)
   tbls <- lapply(tbls, function(tbl) DBI::dbReadTable(con, tbl))
   
