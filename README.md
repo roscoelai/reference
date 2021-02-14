@@ -4,11 +4,15 @@
 
 #### Filter all duplicated values
 
+For display only, most of the time.
+
 ```r
 all.duplicated <- function(x) duplicated(x) | duplicated(x, fromLast=TRUE)
 ```
 
 #### Forward fill
+
+Not the most robust, but simple.
 
 ```r
 ffill <- function(x) {
@@ -31,6 +35,8 @@ get.filepaths <- function(...) {
 
 #### Replace with named vector
 
+Is there something simpler...?
+
 ```r
 replace.map <- function(x, mapping) {
   mask <- x %in% names(mapping)
@@ -39,7 +45,7 @@ replace.map <- function(x, mapping) {
 }
 ```
 
-#### Dealing with Excel files
+#### Excel
 
 ```r
 library(data.table)
@@ -129,6 +135,8 @@ msgbox <- function(title, message, icon = "info", type = "ok", ...) {
 
 #### Whitespace to CSV
 
+`data.table::` is much faster for large files.
+
 ```r
 library(data.table)
 library(tools)
@@ -141,6 +149,8 @@ whitespace.to.csv <- function(filepath) {
 ```
 
 #### Reshape
+
+This is too painful. Incorporate `data.table::` and use `dcast()` and `melt()`.
 
 ```r
 wide2long <- function(df, idvar, name = "name", value = "value", ...) {
@@ -171,6 +181,8 @@ long2wide <- function(df, idvar, groups, sep = '.', ...) {
 ```
 
 #### 'Union' `rbind` for dataframes that do not have matching columns
+
+Refer to the documentation if using `data.table::rbind()` instead.
 
 ```r
 outer.rbind <- function(...) {
