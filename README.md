@@ -35,10 +35,11 @@ get.filepaths <- function(...) {
 
 #### Replace with named vector
 
-Is there something simpler...?
+_Is there something simpler...?_
 
 ```r
-replace.map <- function(x, mapping) {
+replace.map <- function(x, mapping, standardize = FALSE) {
+  if (standardize) x <- tolower(trimws(x))
   mask <- x %in% names(mapping)
   x[mask] <- mapping[x[mask]]
   x
@@ -50,7 +51,6 @@ replace.map <- function(x, mapping) {
 ```r
 library(data.table)
 library(openxlsx)
-# library(readxl)
 
 xlsx.date <- function(x) {
   as.Date(x, origin = "1899-12-30")
@@ -61,14 +61,14 @@ xlsx.datetime <- function(x) {
 }
 
 xread <- function(...) {
-  # data.table::as.data.table(readxl::read_xlsx(...))
   data.table::as.data.table(openxlsx::read.xlsx(...))
 }
 
-xread.all <- function(filepath, ...) {
-  # sheetnames <- readxl::excel_sheets(filepath)
-  sheetnames <- openxlsx::getSheetNames(filepath)
-  sheetnames <- setNames(sheetnames, sheetnames)
+xread.all <- function(filepath, sheetnames = NULL, ...) {
+  if (is.null(sheetnames)) {
+    sheetnames <- openxlsx::getSheetNames(filepath)
+    sheetnames <- setNames(sheetnames, sheetnames)
+  }
   lapply(sheetnames, function(sheetname) {
     xread(filepath, sheet = sheetname, ...)
   })
