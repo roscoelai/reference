@@ -1,0 +1,236 @@
+---
+title: "Title"
+author: "Name"
+date: "YYYY-MM-DD"
+output:
+  html_document:
+    code_folding: show # or 'hide'
+    number_sections: yes
+    theme: flatly
+    toc: yes
+    toc_float: yes
+editor_options:
+  chunk_output_type: console
+---
+
+# Setup
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# The working directory for a project will be the project folder
+# However, the working directory might be elsewhere when Knitting
+# This might cause all kinds of errors (e.g. file not found)
+# So, set the project folder as the root directory
+# This will avoid having to abuse `setwd()`, which is bad practice
+
+knitr::opts_knit$set(root.dir = normalizePath(".."))
+```
+
+```{r attach-packages}
+
+# Let readers know what packages will be used in the script
+# Especially for non-base packages, which need to be installed first
+# DO NOT load any packages that will not be used
+# DO NOT load any packages more than once
+
+library(data.table)
+library(DBI)
+library(fs)
+library(openxlsx)
+library(RSQLite)
+```
+
+## Working directory
+
+```{r working-directory}
+
+# Let readers know script and data files are related in the project folder
+# Can customize to show different sections of the project folder
+
+fs::dir_tree(regexp = "data|src")
+```
+
+## Utility functions
+
+### Some dependencies
+
+```{r functions-some-dependencies}
+
+# Read an Excel spreadsheet into a data.table
+xread <- function(...) {
+  data.table::as.data.table(openxlsx::read.xlsx(...))
+}
+
+# Read all spreadsheets in an Excel workbook into a list of data.tables
+# Or specify which spreadsheets in an Excel workbook to read
+xread.all <- function(filepath, sheetnames = NULL, ...) {
+  if (is.null(sheetnames)) {
+    sheetnames <- openxlsx::getSheetNames(filepath)
+  }
+  
+  if (is.null(names(sheetnames))) {
+    sheetnames <- setNames(sheetnames, sheetnames)
+  }
+  
+  lapply(sheetnames, function(sheetname) {
+    xread(filepath, sheet = sheetname, ...)
+  })
+}
+
+# Write a list of data.tables into an Excel workbook
+write.one.xlsx <- function(DTs, filepath, firstActiveCol = 2, ...) {
+  openxlsx::write.xlsx(
+    DTs,
+    file = filepath,
+    headerStyle = openxlsx::createStyle(textDecoration = "bold"),
+    firstActiveRow = 2,
+    firstActiveCol = firstActiveCol,
+    colWidths = "auto",
+    ...
+  )
+}
+
+# Read all tables in an SQLite database file
+# Or specify which tables in an SQLite database file to read
+dbread.tbls <- function(filepath, tables = NULL) {
+  con <- DBI::dbConnect(RSQLite::SQLite(), filepath)
+  
+  if (is.null(tables)) {
+    tbls <- DBI::dbListTables(con)
+  } else {
+    tbls <- tables
+  }
+  
+  tbls <- setNames(tbls, tbls)
+  tbls <- lapply(tbls, function(tbl) DBI::dbReadTable(con, tbl))
+  
+  DBI::dbDisconnect(con)
+  
+  tbls
+}
+
+# Write a list of data.tables into an SQLite database file
+dbwrite.all <- function(DTs, filepath, ...) {
+  con <- DBI::dbConnect(RSQLite::SQLite(), filepath)
+  
+  mapply(function(name, DT) {
+    DBI::dbWriteTable(con, name, DT, ...)
+  }, names(DTs), DTs)
+  
+  DBI::dbDisconnect(con)
+}
+
+# Convert a whitespace-delimited text file to CSV
+# Use `data.table::` as it is much faster for large files
+whitespace.to.csv <- function(filepath) {
+  DT <- data.table::fread(filepath, header = TRUE)
+  new.filepath <- paste0(tools::file_path_sans_ext(filepath), ".csv")
+  data.table::fwrite(DT, new.filepath)
+}
+```
+
+### No dependencies
+
+```{r functions-no-dependencies}
+
+# Replace values using a named vector as a mapping/lookup table
+# Leave non-specified values unchanged
+replace.map <- function(x, mapping, standardize = FALSE) {
+  if (standardize) {
+    x <- tolower(trimws(x))
+  }
+  
+  mask <- x %in% names(mapping)
+  x[mask] <- mapping[x[mask]]
+  x
+}
+
+# Retrieve all file paths in the specified folder(s)
+get.filepaths <- function(...) {
+  flds <- unlist(list(...))
+  setdiff(
+    list.files(flds, full.names = TRUE),
+    list.dirs(flds, full.names = TRUE, recursive = FALSE)
+  )
+}
+
+# Convert factor to numeric (levels should be numbers)
+as.numeric.factor <- function(x) {
+  as.numeric(levels(x))[x]
+}
+
+# Get all copies of duplicated values
+all.duplicated <- function(x) {
+  duplicated(x) | duplicated(x, fromLast = TRUE)
+}
+
+# Naive (i.e. NOT robust) forward-fill
+ffill <- function(x) {
+  notna.idx <- which(!is.na(x))
+  rep(x[notna.idx], times = diff(c(notna.idx, length(x) + 1)))
+}
+
+# Convert Excel date values to actual dates
+xlsx.date <- function(x) {
+  as.Date(x, origin = "1899-12-30")
+}
+
+# Convert Excel datetime values to actual datetimes
+xlsx.datetime <- function(x) {
+  as.POSIXct(x * 86400, origin = "1899-12-30", tz = "GMT")
+}
+
+# Display message box
+msgbox <- function(title, message, icon = "info", type = "ok", ...) {
+  tcltk::tkmessageBox(
+    title = title,
+    message = message,
+    icon = icon,
+    type = type,
+    ...
+  )
+}
+
+# Pivot table wide-to-longer
+# Really painful, recommend using `data.table::melt()` instead
+wide2long <- function(df, idvar, name = "name", value = "value", ...) {
+  n.idvars <- setdiff(names(df), idvar)
+  
+  reshape(
+    data = as.data.frame(df),
+    varying = n.idvars,
+    v.names = value,
+    timevar = name,
+    idvar = idvar,
+    times = n.idvars,
+    direction = "long",
+    ...
+  )
+}
+
+# Pivot table long-to-wider
+# Really painful, recommend using `data.table::dcast()` instead
+long2wide <- function(df, idvar, groups, sep = '.', ...) {
+  reshape(
+    data = as.data.frame(df),
+    timevar = groups,
+    idvar = idvar,
+    direction = "wide",
+    sep = sep,
+    ...
+  )
+}
+
+# Combine data.frames that do not have the exact same columns
+# Recommend using `data.table::rbind()` instead
+outer.rbind <- function(...) {
+  Reduce(function(x, y) {
+    x[setdiff(names(y), names(x))] <- NA
+    y[setdiff(names(x), names(y))] <- NA
+    rbind(x, y)
+  }, ...)
+}
+```
+
+
