@@ -1,0 +1,230 @@
+# Useful Functions in R
+
+## Commonly used
+
+### Replace using named vector
+
+```r
+replace_map <- function(x, mapping, standardize = FALSE) {
+  #' Replace using named vector to map old values to new values
+  #' 
+  #' @description Replace values in a vector using a named vector to map old 
+  #' values to new values. Values not specified will be left unchanged.
+  #' 
+  #' @param x character. The vector with values to replace
+  #' @param mapping character. The named vector that maps old values to new 
+  #' values, old values are set as the names
+  #' @param standardize logical. Trim whitespace and lowercase all values 
+  #' Defaults to FALSE
+  #' 
+  #' @usage replace_map(x, mapping, standardize = FALSE)
+  #' 
+  #' @return The vector with replaced values.
+  #' 
+  #' @examples
+  #' replace_map(c("a1", "a2", "a3"), c(`a1` = "b1", `a2` = "b2"))
+  
+  if (standardize) {
+    x <- tolower(trimws(x))
+  }
+  
+  mask <- x %in% names(mapping)
+  x[mask] <- mapping[x[mask]]
+  
+  x
+}
+```
+
+### Excel
+
+```r
+library(data.table)
+library(openxlsx)
+
+xdate <- function(x) {
+  as.Date(x, origin = "1899-12-30")
+}
+
+xdatetime <- function(x, tz = "UTC") {
+  as.POSIXct(x * 86400, origin = "1899-12-30", tz = tz)
+}
+
+xread <- function(...) {
+  data.table::as.data.table(openxlsx::read.xlsx(...))
+}
+
+xread_all <- function(filepath, sheetnames = NULL, ...) {
+  if (is.null(sheetnames)) {
+    sheetnames <- openxlsx::getSheetNames(filepath)
+  }
+  
+  if (is.null(names(sheetnames))) {
+    sheetnames <- setNames(sheetnames, sheetnames)
+  }
+  
+  lapply(sheetnames, function(sheetname) {
+    xread(filepath, sheet = sheetname, ...)
+  })
+}
+
+xwrite <- function(DTs, filepath, ...) {
+  # Can't think of a better way yet, just edit directly for now
+  
+  openxlsx::write.xlsx(
+    DTs,
+    file = filepath,
+    headerStyle = openxlsx::createStyle(textDecoration = "bold"),
+    firstActiveRow = 2,
+    firstActiveCol = 2,
+    colWidths = "auto",
+    ...
+  )
+}
+```
+
+## Archive (for educational purposes?)
+
+### SQLite
+
+```r
+library(DBI)
+library(RSQLite)
+
+read_sqlite <- function(filepath, tables = NULL) {
+  con <- DBI::dbConnect(RSQLite::SQLite(), filepath)
+  
+  if (is.null(tables)) {
+    tables <- DBI::dbListTables(con)
+  }
+  
+  if (is.null(names(tables))) {
+    tables <- setNames(tables, tables)
+  }
+  
+  dfs <- lapply(tables, function(table) {
+    DBI::dbReadTable(con, table)
+  })
+  
+  DBI::dbDisconnect(con)
+  
+  dfs
+}
+
+write_sqlite <- function(DTs, filepath, ...) {
+  con <- DBI::dbConnect(RSQLite::SQLite(), filepath)
+  
+  Map(function(name, DT) {
+    DBI::dbWriteTable(con, name, DT, ...)
+  }, names(DTs), DTs)
+  
+  DBI::dbDisconnect(con)
+}
+```
+
+### Message box
+
+```r
+library(tcltk)
+
+msgbox <- function(title, message, icon = "info", type = "ok", ...) {
+  tcltk::tkmessageBox(
+    title = title,
+    message = message,
+    icon = icon,
+    type = type,
+    ...
+  )
+}
+```
+
+### All duplicated instances
+
+```r
+duplicated_all <- function(x) {
+  duplicated(x) | duplicated(x, fromLast = TRUE)
+}
+```
+
+### Forward fill (simple)
+
+```r
+ffill_simple <- function(x) {
+  notna.idx <- which(!is.na(x))
+  rep(x[notna.idx], times = diff(c(notna.idx, length(x) + 1)))
+}
+```
+
+### Get all filepaths from specified folder(s)
+
+```r
+get.filepaths <- function(...) {
+  flds <- unlist(list(...))
+  setdiff(
+    list.files(flds, full.names = TRUE),
+    list.dirs(flds, full.names = TRUE, recursive = FALSE)
+  )
+}
+```
+
+### Whitespace to CSV
+
+`data.table::` is much faster for large files
+
+```r
+library(data.table)
+library(tools)
+
+whitespace.to.csv <- function(filepath) {
+  DT <- data.table::fread(filepath, header = TRUE)
+  new.filepath <- paste0(tools::file_path_sans_ext(filepath), ".csv")
+  data.table::fwrite(DT, new.filepath)
+}
+```
+
+### Reshape
+
+Only if `data.table::` is not available  
+Otherwise, use `dcast()` and `melt()`  
+
+```r
+wide2long <- function(df, idvar, name = "name", value = "value", ...) {
+  n.idvars <- setdiff(names(df), idvar)
+  
+  reshape(
+    data = as.data.frame(df),
+    varying = n.idvars,
+    v.names = value,
+    timevar = name,
+    idvar = idvar,
+    times = n.idvars,
+    direction = "long",
+    ...
+  )
+}
+
+long2wide <- function(df, idvar, groups, sep = '.', ...) {
+  reshape(
+    data = as.data.frame(df),
+    timevar = groups,
+    idvar = idvar,
+    direction = "wide",
+    sep = sep,
+    ...
+  )
+}
+```
+
+### 'Union' `rbind` for dataframes that do not have matching columns
+
+Only if `data.table::` is not available  
+Otherwise, use `rbind()`  
+
+```r
+outer.rbind <- function(...) {
+  Reduce(function(x, y) {
+    x[setdiff(names(y), names(x))] <- NA
+    y[setdiff(names(x), names(y))] <- NA
+    rbind(x, y)
+  }, ...)
+}
+```
