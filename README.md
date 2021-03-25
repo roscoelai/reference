@@ -4,11 +4,11 @@
 
 ### [R Useful Functions](https://github.com/roscoelai/gen-ref/blob/master/R-Useful-Functions.md)
 
-### [R Markdown template](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.Rmd)
+### [template.Rmd](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.Rmd)
 
 ## Python
 
-### [Python template](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.py)
+### [template.py](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.py)
 
 ## Tools
 
