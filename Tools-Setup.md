@@ -14,15 +14,33 @@ Learn more about [using projects](https://support.rstudio.com/hc/en-us/articles/
 
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html) - [[Miniconda3-latest-Windows-x86_64.exe](https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe)]
 
+Create a new environment (`env1` might not be the best name for an environment)
+
 ```
 conda create -n env1 python ipython jupyterlab matplotlib numpy pandas scikit-learn scipy seaborn spyder
 
 conda activate env1
 
 conda update --all
+
+jupyter lab
+
+spyder
 ```
 
 Learn more about [managing environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
+
+Less recommended would be to use the base environment
+
+```
+conda install python ipython jupyterlab matplotlib numpy pandas scikit-learn scipy seaborn spyder
+
+conda update --all
+
+jupyter lab
+
+spyder
+```
 
 ### Git for Windows SDK
 
