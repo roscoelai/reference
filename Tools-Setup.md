@@ -4,7 +4,7 @@
 
 ### R/RStudio/Rtools40
 
-- [R 4.0.4](https://cran.r-project.org/bin/windows/base/) - [[R-4.0.4-win.exe](https://cran.r-project.org/bin/windows/base/R-4.0.4-win.exe)]
+- [The Comprehensive R Archive Network](https://cran.r-project.org/) - [[R-4.0.4-win.exe](https://cran.r-project.org/bin/windows/base/R-4.0.4-win.exe)]
 - [RStudio Desktop](https://rstudio.com/products/rstudio/download/) - [[RStudio-1.4.1106.zip](https://download1.rstudio.org/desktop/windows/RStudio-1.4.1106.zip)]
 - [Rtools40](https://cran.r-project.org/bin/windows/Rtools/) - [[rtools40-x86_64.exe](https://cran.r-project.org/bin/windows/Rtools/rtools40-x86_64.exe)] (optional)
 
