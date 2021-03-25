@@ -6,6 +6,10 @@
 
 ### [R Markdown template](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.Rmd)
 
+## Python
+
+### [Python template](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.py)
+
 ## Tools
 
 ### [Tools Setup](https://github.com/roscoelai/gen-ref/blob/master/Tools-Setup.md)
