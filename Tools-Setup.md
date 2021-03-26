@@ -17,7 +17,7 @@ Learn more about [using projects](https://support.rstudio.com/hc/en-us/articles/
 Create a new environment (`env1` might not be the best name for an environment)
 
 ```
-conda create -n env1 python ipython jupyterlab matplotlib numpy pandas scikit-learn scipy seaborn spyder
+conda create -n env1 python ipython jupyterlab matplotlib numpy pandas scikit-learn scipy seaborn spyder statsmodels
 
 conda activate env1
 
@@ -30,10 +30,10 @@ spyder
 
 Learn more about [managing environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
 
-Less recommended would be to use the base environment
+Or use the base environment (Not recommended)
 
 ```
-conda install python ipython jupyterlab matplotlib numpy pandas scikit-learn scipy seaborn spyder
+conda install python ipython jupyterlab matplotlib numpy pandas scikit-learn scipy seaborn spyder statsmodels
 
 conda update --all
 
@@ -46,3 +46,13 @@ spyder
 
 - [Git for Windows SDK 1.0.8](https://github.com/git-for-windows/build-extra/releases) - [[git-sdk-installer-1.0.8-64.7z.exe](https://github.com/git-for-windows/build-extra/releases/download/git-sdk-1.0.8/git-sdk-installer-1.0.8-64.7z.exe)]
 
+### Julia
+
+- [Julia](https://julialang.org/downloads/) - [[julia-1.6.0-win64.zip](https://julialang-s3.julialang.org/bin/winnt/x64/1.6/julia-1.6.0-win64.zip)]
+
+```julia
+julia> ]
+(@v1.6) pkg> add Pluto
+julia> import Pluto
+julia> Pluto.run(launch_browser = false)
+```
