@@ -52,7 +52,7 @@ spyder
 
 ```julia
 julia> ]
-(@v1.6) pkg> add Pluto
+(@v1.6) pkg> add CSV DataFrames Plots Pluto
 julia> import Pluto
 julia> Pluto.run(launch_browser = false)
 ```
