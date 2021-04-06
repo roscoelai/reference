@@ -24,13 +24,9 @@ replace_map <- function(x, mapping, standardize = FALSE) {
   #' @examples
   #' replace_map(c("a1", "a2", "a3"), c(`a1` = "b1", `a2` = "b2"))
   
-  if (standardize) {
-    x <- tolower(trimws(x))
-  }
-  
+  if (standardize) x <- tolower(trimws(x))
   mask <- x %in% names(mapping)
   x[mask] <- mapping[x[mask]]
-  
   x
 }
 ```
@@ -38,8 +34,21 @@ replace_map <- function(x, mapping, standardize = FALSE) {
 ### Excel
 
 ```r
-library(data.table)
-library(openxlsx)
+xread <- function(xlsxFile, ...) {
+  df <- openxlsx::read.xlsx(xlsxFile, ...)
+  DT <- data.table::as.data.table(df)
+  DT
+}
+
+xread_all <- function(xlsxFile, sheets = NULL, ...) {
+  if (is.null(sheets)) sheets <- openxlsx::getSheetNames(xlsxFile)
+  if (is.null(names(sheets))) sheets <- setNames(sheets, sheets)
+  dfs <- lapply(sheets, function(sheet) {
+    openxlsx::read.xlsx(xlsxFile, sheet = sheet, ...)
+  })
+  DTs <- lapply(dfs, data.table::as.data.table)
+  DTs
+}
 
 xdate <- function(x) {
   as.Date(x, origin = "1899-12-30")
@@ -49,32 +58,12 @@ xdatetime <- function(x, tz = "UTC") {
   as.POSIXct(x * 86400, origin = "1899-12-30", tz = tz)
 }
 
-xread <- function(xlsxFile, ...) {
-  df <- openxlsx::read.xlsx(xlsxFile, ...)
-  DT <- data.table::as.data.table(df)
-  DT
-}
-
-xread_all <- function(xlsxFile, sheetnames = NULL, ...) {
-  if (is.null(sheetnames)) {
-    sheetnames <- openxlsx::getSheetNames(xlsxFile)
-  }
-  if (is.null(names(sheetnames))) {
-    sheetnames <- setNames(sheetnames, sheetnames)
-  }
-  dfs <- lapply(sheetnames, function(sheetname) {
-    openxlsx::read.xlsx(xlsxFile, sheet = sheetname, ...)
-  })
-  DTs <- lapply(dfs, data.table::as.data.table)
-  DTs
-}
-
-xwrite <- function(x, filepath, ...) {
+xwrite <- function(x, file, ...) {
   # Can't think of a better way yet, just edit directly for now
   
   openxlsx::write.xlsx(
     x,
-    file = filepath,
+    file = file,
     headerStyle = openxlsx::createStyle(textDecoration = "bold"),
     firstActiveRow = 2,
     firstActiveCol = 2,
@@ -127,8 +116,8 @@ write_sqlite <- function(DTs, filepath, ...) {
 
 ```r
 ffill_simple <- function(x) {
-  notna.idx <- which(!is.na(x))
-  rep(x[notna.idx], times = diff(c(notna.idx, length(x) + 1)))
+  notna_idx <- which(!is.na(x))
+  rep(x[notna_idx], times = diff(c(notna_idx, length(x) + 1)))
 }
 ```
 
