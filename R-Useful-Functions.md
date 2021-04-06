@@ -49,29 +49,31 @@ xdatetime <- function(x, tz = "UTC") {
   as.POSIXct(x * 86400, origin = "1899-12-30", tz = tz)
 }
 
-xread <- function(...) {
-  data.table::as.data.table(openxlsx::read.xlsx(...))
+xread <- function(xlsxFile, ...) {
+  df <- openxlsx::read.xlsx(xlsxFile, ...)
+  DT <- data.table::as.data.table(df)
+  DT
 }
 
-xread_all <- function(filepath, sheetnames = NULL, ...) {
+xread_all <- function(xlsxFile, sheetnames = NULL, ...) {
   if (is.null(sheetnames)) {
-    sheetnames <- openxlsx::getSheetNames(filepath)
+    sheetnames <- openxlsx::getSheetNames(xlsxFile)
   }
-  
   if (is.null(names(sheetnames))) {
     sheetnames <- setNames(sheetnames, sheetnames)
   }
-  
-  lapply(sheetnames, function(sheetname) {
-    xread(filepath, sheet = sheetname, ...)
+  dfs <- lapply(sheetnames, function(sheetname) {
+    openxlsx::read.xlsx(xlsxFile, sheet = sheetname, ...)
   })
+  DTs <- lapply(dfs, data.table::as.data.table)
+  DTs
 }
 
-xwrite <- function(DTs, filepath, ...) {
+xwrite <- function(x, filepath, ...) {
   # Can't think of a better way yet, just edit directly for now
   
   openxlsx::write.xlsx(
-    DTs,
+    x,
     file = filepath,
     headerStyle = openxlsx::createStyle(textDecoration = "bold"),
     firstActiveRow = 2,
@@ -121,6 +123,15 @@ write_sqlite <- function(DTs, filepath, ...) {
 }
 ```
 
+### Forward fill (simple)
+
+```r
+ffill_simple <- function(x) {
+  notna.idx <- which(!is.na(x))
+  rep(x[notna.idx], times = diff(c(notna.idx, length(x) + 1)))
+}
+```
+
 ### Message box
 
 ```r
@@ -142,15 +153,6 @@ msgbox <- function(title, message, icon = "info", type = "ok", ...) {
 ```r
 duplicated_all <- function(x) {
   duplicated(x) | duplicated(x, fromLast = TRUE)
-}
-```
-
-### Forward fill (simple)
-
-```r
-ffill_simple <- function(x) {
-  notna.idx <- which(!is.na(x))
-  rep(x[notna.idx], times = diff(c(notna.idx, length(x) + 1)))
 }
 ```
 
