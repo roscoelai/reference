@@ -17,7 +17,7 @@ Learn more about [using projects](https://support.rstudio.com/hc/en-us/articles/
 Create a new environment (`env1` might not be the best name for an environment)
 
 ```
-conda create -n env1 python ipython jupyterlab matplotlib numpy pandas scikit-learn scipy seaborn spyder statsmodels tqdm
+conda create -n env1 python ipython jupyterlab matplotlib numpy openpyxl pandas scikit-learn scipy seaborn spyder statsmodels tqdm
 
 conda activate env1
 
@@ -29,7 +29,7 @@ Learn more about [managing environments](https://docs.conda.io/projects/conda/en
 Or use the base environment (Not recommended)
 
 ```
-conda install python ipython jupyterlab matplotlib numpy pandas scikit-learn scipy seaborn spyder statsmodels tqdm
+conda install python ipython jupyterlab matplotlib numpy openpyxl pandas scikit-learn scipy seaborn spyder statsmodels tqdm
 
 conda update --all
 ```
