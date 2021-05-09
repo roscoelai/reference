@@ -12,4 +12,4 @@
 
 ## Tools
 
-### [Tools Setup](https://github.com/roscoelai/gen-ref/blob/master/Tools-Setup.md)
+### [Setup Working Environment](https://github.com/roscoelai/reference/tree/master/setup)
