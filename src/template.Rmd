@@ -4,7 +4,7 @@ author: "Name"
 date: "YYYY-MM-DD"
 output:
   html_document:
-    code_folding: show # or 'hide'
+    code_folding: show
     number_sections: yes
     theme: flatly
     toc: yes
@@ -19,9 +19,14 @@ knitr::opts_knit$set(root.dir = normalizePath(".."))
 ```
 
 ```{r attach-packages}
-library(data.table)
-library(fs)
-library(openxlsx)
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(
+  assertthat,
+  fs,
+  readxl,
+  tidyverse,
+  writexl
+)
 ```
 
 ## Working directory
@@ -30,75 +35,10 @@ library(openxlsx)
 fs::dir_tree(regexp = "data|src")
 ```
 
-## Utility functions
+# Header
 
-```{r utility-functions}
-replace_map <- function(x, mapping, standardize = FALSE) {
-  #' Replace using named vector to map old values to new values
-  #' 
-  #' @description Replace values in a vector using a named vector to map old 
-  #' values to new values. Values not specified will be left unchanged.
-  #' 
-  #' @param x character. The vector with values to replace
-  #' @param mapping character. The named vector that maps old values to new 
-  #' values, old values are set as the names
-  #' @param standardize logical. Trim whitespace and lowercase all values 
-  #' Defaults to FALSE
-  #' 
-  #' @usage replace_map(x, mapping, standardize = FALSE)
-  #' 
-  #' @return The vector with replaced values.
-  #' 
-  #' @examples
-  #' replace_map(c("a1", "a2", "a3"), c(`a1` = "b1", `a2` = "b2"))
-  
-  if (standardize) {
-    x <- tolower(trimws(x))
-  }
-  
-  mask <- x %in% names(mapping)
-  x[mask] <- mapping[x[mask]]
-  
-  x
-}
+## Sub-header
 
-xdate <- function(x) {
-  as.Date(x, origin = "1899-12-30")
-}
+```{r}
 
-xdatetime <- function(x, tz = "UTC") {
-  as.POSIXct(x * 86400, origin = "1899-12-30", tz = tz)
-}
-
-xread <- function(...) {
-  data.table::as.data.table(openxlsx::read.xlsx(...))
-}
-
-xread_all <- function(filepath, sheetnames = NULL, ...) {
-  if (is.null(sheetnames)) {
-    sheetnames <- openxlsx::getSheetNames(filepath)
-  }
-  
-  if (is.null(names(sheetnames))) {
-    sheetnames <- setNames(sheetnames, sheetnames)
-  }
-  
-  lapply(sheetnames, function(sheetname) {
-    xread(filepath, sheet = sheetname, ...)
-  })
-}
-
-xwrite <- function(DTs, filepath, ...) {
-  # Can't think of a better way yet, just edit directly for now
-  
-  openxlsx::write.xlsx(
-    DTs,
-    file = filepath,
-    headerStyle = openxlsx::createStyle(textDecoration = "bold"),
-    firstActiveRow = 2,
-    firstActiveCol = 2,
-    colWidths = "auto",
-    ...
-  )
-}
 ```
