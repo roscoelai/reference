@@ -106,16 +106,16 @@ mamba create -n env1 python ipython jupyterlab matplotlib numpy openpyxl pandas 
 
 ## 3. R/RStudio/Rtools40
 
-1. Download R from [The Comprehensive R Archive Network](https://cran.r-project.org/) - [[R-4.0.5-win.exe](https://cran.r-project.org/bin/windows/base/R-4.0.5-win.exe)]
+1. Download R from [The Comprehensive R Archive Network](https://cran.r-project.org/) - [[R-4.1.0-win.exe](https://cran.r-project.org/bin/windows/base/R-4.1.0-win.exe)]
 
-2. Download [RStudio Desktop](https://rstudio.com/products/rstudio/download/) - [[RStudio-1.4.1106.zip](https://download1.rstudio.org/desktop/windows/RStudio-1.4.1106.zip)]
+2. Download [RStudio Desktop](https://rstudio.com/products/rstudio/download/) - [[RStudio-1.4.1717.zip](https://download1.rstudio.org/desktop/windows/RStudio-1.4.1717.zip)]
 
-3. Extract to directories in `/opt` (_e.g._ `/opt/R-4.0.5` and `/opt/RStudio-1.4.1106`)
+3. Extract to directories in `/opt` (_e.g._ `/opt/R-4.1.0` and `/opt/RStudio-1.4.1717`)
 
-4. Add the following to `~/.bashrc` (to access RStudio using `rstudio`)
+4. Add the following to `~/.bashrc` (Add `rstudio`, `Rscript`, `Rgui`, `R`, ... to PATH)
 
 ```bash
-export PATH="${PATH}:/opt/R-4.0.5/bin:/opt/R-4.0.5/bin/x64:/opt/RStudio-1.4.1106/bin"
+export PATH="${PATH}:/opt/R-4.1.0/bin/x64:/opt/RStudio-1.4.1717/bin"
 export DLFLD="${USERPROFILE}/Downloads"
 alias rstudio='start //d "${DLFLD//\//\\}" rstudio'
 ```
@@ -124,20 +124,38 @@ alias rstudio='start //d "${DLFLD//\//\\}" rstudio'
 
 6. (Optional) Download [Rtools40](https://cran.r-project.org/bin/windows/Rtools/) - [[rtools40v2-x86_64.exe](https://cran.r-project.org/bin/windows/Rtools/rtools40v2-x86_64.exe)] and follow the installation instructions
 
-## 4. Julia
+## 4. Java
+
+1. Download [OpenJDK](https://jdk.java.net/16/) - [[openjdk-16.0.1_windows-x64_bin.zip](https://download.java.net/java/GA/jdk16.0.1/7147401fd7354114ac51ef3e1328291f/9/GPL/openjdk-16.0.1_windows-x64_bin.zip)]
+
+2. Extract to a directory in `/opt` (_e.g._ `/opt/openjdk-16.0.1`)
+
+3. Add the following to `~/.bashrc`
+
+```bash
+export PATH="/opt/jdk-16.0.1/bin:${PATH}"
+```
+
+## 5. Julia
 
 1. Download [Julia](https://julialang.org/downloads/) - [[julia-1.6.1-win64.zip](https://julialang-s3.julialang.org/bin/winnt/x64/1.6/julia-1.6.1-win64.zip)]
 
-2. Extract to a directory in `/opt` (_e.g._ `julia-1.6.1`)
+2. Extract to a directory in `/opt` (_e.g._ `/opt/julia-1.6.1`)
 
-3. Add packages
+3. Add the following to `~/.bashrc`
+
+```bash
+export PATH="${PATH}:/opt/julia-1.6.1/bin"
+```
+
+4. Add packages
 
 ```julia
 julia> ]
 (@v1.6) pkg> add CSV DataFrames Plots Pluto
 ```
 
-4. Launch Pluto notebook
+5. Launch Pluto notebook
 
 ```julia
 julia> import Pluto
