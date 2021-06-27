@@ -1,15 +1,18 @@
-# Quick Links
+# Links
 
-## R
+## General
 
-### [R Useful Functions](https://github.com/roscoelai/gen-ref/blob/master/R-Useful-Functions.md)
-
-### [template.Rmd](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.Rmd)
+- [How to setup work environment](https://github.com/roscoelai/reference/tree/master/setup)
 
 ## Python
 
-### [template.py](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.py)
+- Python script template - [[template.py](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.py)]
 
-## Tools
+## R
 
-### [Setup Working Environment](https://github.com/roscoelai/reference/tree/master/setup)
+- [Some useful R Functions](https://github.com/roscoelai/gen-ref/blob/master/R-Useful-Functions.md)
+- R Markdown script template - [[template.Rmd](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.Rmd)]
+
+## REDCap
+
+- [REDCap cheatsheet](https://github.com/roscoelai/reference/blob/master/reference-REDCap.md)
