@@ -10,7 +10,7 @@
 
 ## R
 
-- [Some useful R Functions](https://github.com/roscoelai/gen-ref/blob/master/R-Useful-Functions.md)
+- [Some useful R Functions](https://github.com/roscoelai/gen-ref/blob/master/reference-R.md)
 - R Markdown script template - [[template.Rmd](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.Rmd)]
 
 ## REDCap
