@@ -12,7 +12,8 @@
     - Usually for short phrases or sentences
     - Using this for block indentation would be a terrible mistake
   - `<font>`
-    - Might be more convenient in some cases
+    - Might be more convenient in some cases, _e.g._
+      - `<font color="red">` vs. `<span style="color: red;">`
   - Inline styles can also be specified on other elements such as `<strong>`, `<em>`, `<u>`, `<b>`, `<i>`, _etc._
 
 ## Newlines/Line breaks
@@ -22,6 +23,8 @@
   - May use newlines when first creating a field, because it's easier to read
   - But once finalized, replace all newlines with `<br />`
 - Creating a nicely formatted HTML table within a field label will produce a messed up field label, because all the newlines will accumulate above the table, resulting in a massive blank space
+  - Solve by removing all the newlines
+  - HTML code will be less readable
 
 ## Indentation
 
@@ -70,7 +73,7 @@
 - Variables that change daily
   - _Do not_ store &mdash; At some point they will be _misinformation_
   - Solve the `saqstats` problem
-    - No known solution, yet
+    - No known solution, yet (status 4 and 5 are the hard problems)
 - Summation of variables
   - `[var1] + [var2] + ... + [varn]` will not ignore blanks
   - `sum([var1], [var2], ..., [varn])` will ignore blanks
@@ -81,4 +84,4 @@
   - Calculation is `[date2] - [date1]` in the units specified
   - Always return signed values, unless there a guarantee of no consequence of double-counting something
   - Timestamps or larger units might give results with fractional components
-    - Round off to some number of decimal places
+    - Round off to some number of decimal places (to give Rule H a break)
