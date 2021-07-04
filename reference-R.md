@@ -2,6 +2,13 @@
 
 ## Commonly used
 
+### `pacman::`
+
+```r
+if (!require("pacman", quietly = TRUE)) install.packages("pacman")
+pacman::p_load(...)
+```
+
 ### Replace using named vector
 
 ```r
@@ -24,14 +31,17 @@ replace_map <- function(x, mapping, standardize = FALSE) {
   #' @examples
   #' replace_map(c("a1", "a2", "a3"), c(`a1` = "b1", `a2` = "b2"))
   
-  if (standardize) x <- tolower(trimws(x))
+  if (standardize)
+    x <- tolower(trimws(x))
   mask <- x %in% names(mapping)
   x[mask] <- mapping[x[mask]]
   x
 }
 ```
 
-### Excel
+## Archive (for educational purposes?)
+
+### Excel with `data.table::`
 
 ```r
 xread <- function(xlsxFile, ...) {
@@ -41,8 +51,10 @@ xread <- function(xlsxFile, ...) {
 }
 
 xread_all <- function(xlsxFile, sheets = NULL, ...) {
-  if (is.null(sheets)) sheets <- openxlsx::getSheetNames(xlsxFile)
-  if (is.null(names(sheets))) sheets <- setNames(sheets, sheets)
+  if (is.null(sheets))
+    sheets <- openxlsx::getSheetNames(xlsxFile)
+  if (is.null(names(sheets)))
+    sheets <- setNames(sheets, sheets)
   dfs <- lapply(sheets, function(sheet) {
     openxlsx::read.xlsx(xlsxFile, sheet = sheet, ...)
   })
@@ -72,8 +84,6 @@ xwrite <- function(x, file, ...) {
   )
 }
 ```
-
-## Archive (for educational purposes?)
 
 ### SQLite
 
@@ -159,7 +169,7 @@ get.filepaths <- function(...) {
 
 ### Whitespace to CSV
 
-`data.table::` is much faster for large files
+`data.table::` is _much faster_ for large files
 
 ```r
 library(data.table)
@@ -174,8 +184,10 @@ whitespace.to.csv <- function(filepath) {
 
 ### Reshape
 
-Only if `data.table::` is not available  
-Otherwise, use `dcast()` and `melt()`  
+= Only if `data.table::` is not available
+- Otherwise, use `dcast()` and `melt()`
+- For base R, better to learn how to do it manually
+  - _e.g._ `grep()` and `rbind()`, or `split()`/`by()` and `merge()`, ...
 
 ```r
 wide2long <- function(df, idvar, name = "name", value = "value", ...) {
