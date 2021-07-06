@@ -52,7 +52,14 @@ pacman -Rs $(pacman -Qqs i686)
 pacman -Rs mingw-w64-x86_64-xpdf-tools
 ```
 
-8. Set some global configs for git
+8. Add some packages
+
+```bash
+pacman -S tree
+pacman -S mingw-w64-x86_64-poppler
+```
+
+9. Set some global configs for git
 
 ```bash
 git config --global core.askPass ""
@@ -61,7 +68,7 @@ git config --global user.name "John Doe"
 git config --global user.email johndoe@example.com
 ```
 
-9. There might be some error messages on welcome, which may require editing `/etc/profile.d/git-sdk.sh`
+10. There might be some error messages on welcome, which may require editing `/etc/profile.d/git-sdk.sh`
 
 ## 2. Miniconda
 
@@ -136,7 +143,23 @@ alias rstudio='start //d "${DLFLD//\//\\}" rstudio'
 export PATH="/opt/jdk-16.0.1/bin:${PATH}"
 ```
 
-## 5. Julia
+## 5. Go
+
+```bash
+pacman -S mingw-w64-x86_64-go
+```
+
+😊
+
+## 6. Rust
+
+```bash
+pacman -S mingw-w64-x86_64-rust
+```
+
+😊
+
+## 7. Julia
 
 1. Download [Julia](https://julialang.org/downloads/) - [[julia-1.6.1-win64.zip](https://julialang-s3.julialang.org/bin/winnt/x64/1.6/julia-1.6.1-win64.zip)]
 
