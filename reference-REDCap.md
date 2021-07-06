@@ -68,20 +68,24 @@
 
 ## Calculations
 
-- Variables that never change or only change at data entry
-  - Create fields to store them
-- Variables that change daily
-  - _Do not_ store &mdash; At some point they will be _misinformation_
-  - Solve the `saqstats` problem
-    - No known solution, yet (status 4 and 5 are the hard problems)
 - Summation of variables
   - `[var1] + [var2] + ... + [varn]` will not ignore blanks
   - `sum([var1], [var2], ..., [varn])` will ignore blanks
   - Choose the appropriate one
   - For simple surveys where all fields are required, there is no difference
+- Variables that never change or only change at data entry
+  - Create fields to store them if needed for calculations later
+- Variables that change daily
+  - _Do not_ store &mdash; At some point they will be _misinformation_
+  - Solve the `saqstats` problem
+    - No known solution, yet
+    - Statuses 2-5 require checking windows, so cannot be tied to events
 - `datediff()`
   - `datediff([date1], [date2], "units", "date format", Return Signed Value)`
   - Calculation is `[date2] - [date1]` in the units specified
-  - Always return signed values, unless there a guarantee of no consequence of double-counting something
-  - Timestamps or larger units might give results with fractional components
-    - Round off to some number of decimal places (to give Rule H a break)
+  - _Always return signed values_
+    - _Especially_ when using `datediff("today", [date2], 'd', true)`, where `[date2]` is in the future
+    - May not be necessary if `[date2]` is _always_ greater than `[date1]`
+  - Using datetimes or asking for larger units (> days) might give results with fractional components
+    - There might be differences in how PHP and JS calculate time intervals
+    - So, consider rounding off to a reasonable number of decimal places to give Rule H a break
