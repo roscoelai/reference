@@ -37,105 +37,122 @@ Most of the points here are not beginner-level, and might require some experienc
   - Abbreviations (supposed to be all capitals) may need to be fixed
   - Brackets and/or hyphens may need to be restored
 - How to edit form names online
-  - In development
+  - In development:
     - Changing the instrument name in the online designer will immediately create a new name that follows the rules above
-  - In production
+  - In production:
     - _Impossible_ &mdash; Changing the instrument name in the online designer will only affect the display
     - The only way is to modify the instrument or project data dictionary and upload
 - Unlike variable names, form names can be changed in production, but that would be a terrible idea, so any bad decisions made will most likely persist to the end of the form's lifecycle
 
 Do we need good variable/form names? No. We could give random characters to everything, as long as there are no duplicates. But doing so will make everything else intractable. We will _want_ good names.
 
-## Field labels (WIP)
+## Field labels
 
-- ...
+- Variable names may have limited ability to express the full nature of variables
+- Field labels will allow a more detailed description, and fulfills this function in the data dictionary
+- Field labels are also what get displayed in forms and more importantly surveys
+  - Field labels might need to incorporate HTML and inline CSS to prettify content
+  - Data dictionary may be harder to read with the addition of HTML tags
 
-### HTML elements to contain text
+### HTML elements
 
-- Usually used when we need to apply inline style during instrument design
-  - `<div>`
-    - Recommended for most cases when dealing with a block of text, _e.g._ for indentation
-  - `<p>`
-    - Most likely `<div>` will be preferred, because it has been observed that `<p>` may have inconsistent font styles with different indentation levels &mdash; Specifically, smaller font sizes for deeper indentation levels, which is a surprise
-    - There are some cases where `<p>` will have to be used over `<div>`, _e.g._ custom messages in the survey queue page &mdash; Using `<div>` with long sentences may result in text overflowing out of the header region and even the viewport
-  - `<span>`
-    - Usually for short phrases or sentences
-    - Using this for block indentation would be a terrible mistake
-  - `<font>`
-    - Might be more convenient in some cases, _e.g._
-      - `<font color="red">` vs. `<span style="color: red;">`
-  - Inline styles can also be specified on other elements such as `<strong>`, `<em>`, `<u>`, `<b>`, `<i>`, _etc._
+- `<div>` and `<p>`
+  - Use for styling a block of text, _e.g._ block indentation
+  - Interchangable in most cases, but one might be preferred over the other in some situations (might have something to do with REDCap's default styling for each)
+  - Use `<div>` for indenting labels within instruments
+    - `<p>` has a surprising effect of reducing font size with indentation level &mdash; Surprises are bad
+  - Use `<p>` for the survey queue custom message
+    - Text in `<div>` will not wrap, and long sentences might trail out of the viewport
+- `<span>` and `<font>`
+  - Use when applying a style within a line, or limited to one line
+  - Do not use for block indentation
+  - `<font>` might require less code in some cases
+- Others:
+  - `<strong>`, `<em>`, `<u>`, `<b>`, `<i>`, `<h1>`, ..., `<h6>`, ...
 
-### Newlines/Line breaks
+### Newlines (Line breaks)
 
-- Avoid newlines &mdash; They will mess up the data dictionary
-  - Number of lines in the data dictionary will not correspond with the number of fields
-  - May use newlines when first creating a field, because it's easier to read
-  - But once finalized, replace all newlines with `<br />`
-- Creating a nicely formatted HTML table within a field label will produce a messed up field label, because all the newlines will accumulate above the table, resulting in a massive blank space
-  - Solve by removing all the newlines
-  - HTML code will be less readable
+- Avoid newlines if possible (use `<br />` instead)
+  - Newlines will mess up the data dictionary
+    - The number of lines in the data dictionary will not match the number of fields in the instrument (after accounting for the header)
+    - Not a major consequence, but best to avoid unnecessary discrepancies
+    - Suggestion:
+      - Use newlines when first creating a field, because it's easier to read
+      - Once finalized, replace all newlines with `<br />`
+- HTML tables will have to be done in a single line
+  - If not, all the newlines will accumulate into a massive blank space above the table
+  - Does not apply when using the Rich Text Editor
 
 ### Indentation
 
-- Currently using `<... style="margin: 0 0 0 10%;">` for one level of indentation for non-descriptive fields
+- Currently using `<... style="margin: 0 0 0 10%;">...</...>` for one level of indentation for non-descriptive fields
 - +10% for each level of indentation
-- Descriptive fields will require the percentage to be halved for a similar (approximate) indentation level
+- Descriptive fields will require half the percentage for a similar indentation level
 
 ### Unbold
 
-- `<... style="font-weight: normal;">`
+- `<... style="font-weight: normal;">...</...>` or `<... style="font-weight: lighter;">...</...>`
 
 ### Embedded fields
 
-- Will most likely involve tables
+- Will likely involve tables in most cases
   - Can make use of the Rich Text Editor to help create tables
-  - Will most likely need to edit the HTML to adjust column widths (and maybe row heights)
-  - Recommend adjusting parameters with 2-3 rows
-  - Add the rest of the rows after finalizing parameters (to avoid massive corrections)
-  - The auto-generated HTML code may not be efficient, which will bloat up the data dictionary
-  - Apply the 'majority' style at the highest level, then individual styles to exceptions
+  - Adjust column widths (and other attributes) in the HTML source code
+  - Suggestion:
+    - "Optimize" using 2-3 rows before adding the rest (for larger tables)
+  - HTML source code generated by the Rich Text Editor may not be the most efficient
+    - Just like VBA code generated by the Macro Recorder
+    - This might massively bloat up the data dictionary
+    - Determine the "majority" style of the table and apply it
+    - Then tend to individual exceptions
 - Embedding to a checkbox field
   - _Will not work with enhanced buttons_ &mdash; the field(s) will not appear
-  - _e.g._ a checkbox field with an "Other(s)" option cannot have _both_ an embedded field and enhanced buttons activated
+  - _i.e._ a checkbox field with an "Other(s)" option cannot have _both_ an embedded field and enhanced buttons activated
     - _Choose one_
+
+### Non-standard characters
+
+- Watch out for these &mdash; They might disappear, or be replaced with a box/hyphen/question mark
+- Some listed below:
+
+HTML       | Symbol
+:---------:|:-----:
+`&mdash;`  | &mdash;
+`&ge;`     | &ge;
+`&eacute;` | &eacute;
+
+## Operators and functions
 
 ### Comparison operators
 
 - Equality `=` and inequality `<>`
-  - Quote values
-  - If `[var] = 0` is used in branching logic for a field, it will be revealed even if no option is selected
-  - If `[var] = '0'` is used instead, it will be hidden until a value of '0' is selected (this is one known advantage of quoting; impact on performance from type coercion is unclear)
-- Others (`<`, `<=`, `>`, `>=`)
+  - To standardize practice, quote values compared against
+  - There is an advantage in doing so for branching logic
+    - If branching logic is `[var] = '0'`, field will not appear until `[var]` has a value of `'0'`
+    - If branching logic is `[var] = 0`, field will always be visible until `[var]` has a value not equal to `'0'`
+  - What type coercion goes on behind the scenes is a mystery...
+- `<`, `>`, `<=`, and `>=`
   - _Do not_ quote numeric values
-
-### Non-standard characters
-
-- Might cause problems (_i.e._ disappear, and replaced with a box, or a question mark, or a hyphen)
-  - `&mdash;`: &mdash;
-  - `&ge;`: &ge;
-  - `&eacute;`: &eacute;
 
 ### Calculations
 
 - Summation of variables
-  - `[var1] + [var2] + ... + [varn]` will not ignore blanks
-  - `sum([var1], [var2], ..., [varn])` will ignore blanks
+  - `[var_1] + [var_2] + ... + [var_n]` will not ignore blanks
+  - `sum([var_1], [var_2], ..., [var_n])` will ignore blanks
   - Choose the appropriate one
+    - First one by default
+    - If expecting blanks, second one
   - For simple surveys where all fields are required, there is no difference
-- Variables that never change or only change at data entry
-  - Create fields to store them if needed for calculations later
-- Variables that change daily
-  - _Do not_ store &mdash; At some point they will be _misinformation_
-  - Solve the `saqstats` problem
-    - No known solution, yet
-    - Statuses 2-5 require checking windows, so cannot be tied to events
 - `datediff()`
-  - `datediff([date1], [date2], "units", "date format", Return Signed Value)`
-  - Calculation is `[date2] - [date1]` in the units specified
+  - Signature: `datediff([date1], [date2], "units", "date format", Return Signed Value)`
+  - Calculation is `[date2] - [date1]`, results returned in the unit specified
   - _Always return signed values_
     - _Especially_ when using `datediff("today", [date2], 'd', true)`, where `[date2]` is in the future
-    - May not be necessary if `[date2]` is _always_ greater than `[date1]`
-  - Using datetimes or asking for larger units (> days) might give results with fractional components
-    - There might be differences in how PHP and JS calculate time intervals
-    - So, consider rounding off to a reasonable number of decimal places to give Rule H a break
+    - May not be necessary if `[date2]` is _always_ greater (or lesser) than `[date1]`
+  - "today"
+    - Avoid using it if possible
+    - If using it, avoid storing values that depend on calculations involving it
+    - If storing values that depend on it... haiz... [be prepared](https://www.youtube.com/watch?v=zPUe7O3ODHQ&t=138s) that the values will be inaccurate
+- Giving Rule H a break
+  - Round off all values with decimal places
+  - How many decimal places? Someone should know about the [uncertainty of the measurements](https://www.youtube.com/watch?v=GtOGurrUPmQ&t=280s)
