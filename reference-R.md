@@ -39,6 +39,32 @@ replace_map <- function(x, mapping, standardize = FALSE) {
 }
 ```
 
+### Excel dates
+
+```r
+xdate <- function(x) {
+  as.Date(x, origin = "1899-12-30")
+}
+
+xdatetime <- function(x, tz = "UTC") {
+  as.POSIXct(x * 86400, origin = "1899-12-30", tz = tz)
+}
+```
+
+### Message box
+
+```r
+msgbox <- function(title, message, icon = "info", type = "ok", ...) {
+  tcltk::tkmessageBox(
+    title = title,
+    message = message,
+    icon = icon,
+    type = type,
+    ...
+  )
+}
+```
+
 ## Archive (for educational purposes?)
 
 ### Excel with `data.table::`
@@ -60,14 +86,6 @@ xread_all <- function(xlsxFile, sheets = NULL, ...) {
   })
   DTs <- lapply(dfs, data.table::as.data.table)
   DTs
-}
-
-xdate <- function(x) {
-  as.Date(x, origin = "1899-12-30")
-}
-
-xdatetime <- function(x, tz = "UTC") {
-  as.POSIXct(x * 86400, origin = "1899-12-30", tz = tz)
 }
 
 xwrite <- function(x, file, ...) {
@@ -131,22 +149,6 @@ ffill_simple <- function(x) {
 }
 ```
 
-### Message box
-
-```r
-library(tcltk)
-
-msgbox <- function(title, message, icon = "info", type = "ok", ...) {
-  tcltk::tkmessageBox(
-    title = title,
-    message = message,
-    icon = icon,
-    type = type,
-    ...
-  )
-}
-```
-
 ### All duplicated instances
 
 ```r
@@ -184,7 +186,7 @@ whitespace.to.csv <- function(filepath) {
 
 ### Reshape
 
-= Only if `data.table::` is not available
+- Only if `data.table::` is not available
 - Otherwise, use `dcast()` and `melt()`
 - For base R, better to learn how to do it manually
   - _e.g._ `grep()` and `rbind()`, or `split()`/`by()` and `merge()`, ...
