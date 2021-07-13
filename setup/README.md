@@ -79,11 +79,10 @@ git config --global user.email johndoe@example.com
 3. Add the following to `~/.bashrc` (to access conda command prompt using `conda`)
 
 ```bash
-export DLFLD="${USERPROFILE}/Downloads"
 conda() {
     local miniconda3="${EXEPATH}\\opt\\Miniconda3"
     local activate="${miniconda3}\\Scripts\\activate.bat"
-    start //d "${DLFLD//\//\\}" cmd //k "${activate}" "${miniconda3}"
+    start cmd //k "${activate}" "${miniconda3}"
 }
 ```
 
@@ -123,8 +122,7 @@ mamba create -n env1 python ipython jupyterlab matplotlib numpy openpyxl pandas 
 
 ```bash
 export PATH="${PATH}:/opt/R-4.1.0/bin/x64:/opt/RStudio-1.4.1717/bin"
-export DLFLD="${USERPROFILE}/Downloads"
-alias rstudio='start //d "${DLFLD//\//\\}" rstudio'
+alias rstudio='start rstudio'
 ```
 
 5. Learn more about [using projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects)
