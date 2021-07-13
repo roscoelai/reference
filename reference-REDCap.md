@@ -2,6 +2,8 @@
 
 Most of the points here are not beginner-level, and might require some experience designing instruments (and banging heads against tables/walls) for a better appreciation. Many of these can be safely disregarded for most validated instruments. Otherwise, this would (hopefully) help to avoid some pitfalls.
 
+No experience yet? [Get some here!](https://www.coursera.org/learn/clinical-data-management)
+
 ## Names
 
 ### Variable names (Field names)
