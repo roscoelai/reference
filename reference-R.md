@@ -51,6 +51,24 @@ xdatetime <- function(x, tz = "UTC") {
 }
 ```
 
+### Convert data frame/column(s) to numeric
+
+```r
+as_numeric_vec <- function(vec) {
+  if (is.factor(vec))
+    vec <- as.character(vec)
+  tryCatch({
+    as.numeric(vec)
+  }, warning = function(w) {
+    vec
+  })
+}
+
+as_numeric_df <- function(df) {
+  data.frame(lapply(df, as_numeric_vec))
+}
+```
+
 ### Message box
 
 ```r
