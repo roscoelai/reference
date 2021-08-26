@@ -1,112 +1,110 @@
 # REDCap Cheatsheet
 
-Most of the points here are not beginner-level, and might require some experience designing instruments (and banging heads against tables/walls) for a better appreciation. Many of these can be safely disregarded for most validated instruments. Otherwise, this would (hopefully) help to avoid some pitfalls.
+The uninitiated might have some difficulty appreciating some of the pointers here. To get initiated, consider this course on [Data Management for Clinical Research](https://www.coursera.org/learn/clinical-data-management) on Coursera offered by Vanderbilt University.
 
-No experience yet? [Get some here!](https://www.coursera.org/learn/clinical-data-management)
+<hr />
 
-## Names
+## Instrument Design
 
-### Variable names (Field names)
+### Variable names (or field names, column names)
 
-- Standard rules apply, but it's slightly stricter here:
-  - Only letters, numbers, and underscores
-  - Letters must _(will)_ be lower case
-  - Must _(Will)_ begin with a letter
-  - Does not already exist (not already taken by another variable)
-  - No more than 26 characters (discouraged, but still allowed)
-- Suggestions:
-  - Start with an abbreviation of the instrument name
-    - Best if it's recognized/universal/standardized
-    - Might be a problem if there are multiple instruments with the same abbreviation
-  - Use underscores to separate parts of the variable name, or to substitute dots
-  - Other conventions as necessary:
-    - _e.g._ "_tbl" suffix for tables, or "_desc" or "_inst" suffixes for descriptive fields, place a "q" before question numbers
-  - ...
-- Variable names cannot be changed in production, so any bad decisions made will persist to the end of the instrument's lifecycle
+- Rules
+  - Only _lower case_ letters, numbers, and underscores allowed
+  - Must begin with a lower case letter
+  - Must be unique
+  - Ideally no more than 26 characters
+  - Variable names cannot be changed in production
+- Recommendations
+  - Use underscores to separate parts of the variable name
+  - Prefix all variables in an instrument with an abbreviation of the instrument name
+    - Different instruments might share abbreviations, so might need alternatives
+  - Followed by `_v2`, `_v3`, _etc._ for later versions
+    - Try not to have more than 9 versions
+    - So version 1.1 can be represented by `_v11`, and version 2.2 by `_v22`, _etc._
+    - `.` is not a valid character (this is not R), and we don't want to abuse `_`
+  - Followed by an abbreviation of the section name (if there are sections)
+  - Might have to include a number somewhere if there are repetitions
+  - For individual questions, place a "q" before question numbers
+    - This will allow selecting/filtering columns using the regular expression `_q\\d+`
+  - Suffixes for descriptive fields used so far: `_tbl`, `_inst`, `_disp`
 
-### Form names (Instrument names)
+### Form names (or instrument names)
 
-- What is displayed online can be adjusted by the user(s)
-- The _real_ name has to follow rules:
-  - Only letters, numbers, and underscores
-  - Letters _will_ be lower case
-  - _Will_ begin with a letter
-  - Illegal characters _will_ be removed
-  - **_WILL HAVE_ no more than 50 characters**
-    - Long names will be truncated to 50 characters
-    - Multiple instruments with very long, almost identical names only differing at the end... will not fare well
-- Default display names of uploaded instruments will be in title case
-  - Abbreviations (supposed to be all capitals) may need to be fixed
-  - Brackets and/or hyphens may need to be restored
-- How to edit form names online
-  - In development:
-    - Changing the instrument name in the online designer will immediately create a new name that follows the rules above
-  - In production:
-    - _Impossible_ &mdash; Changing the instrument name in the online designer will only affect the display
-    - The only way is to modify the instrument or project data dictionary and upload
-- Unlike variable names, form names can be changed in production, but that would be a terrible idea, so any bad decisions made will most likely persist to the end of the form's lifecycle
+- There is a display name, and an actual name (the one used for calculations, conditional logic, piping, _etc._)
+- Rules for the actual name are similar to variable names
+  - Only _lower case_ letters, numbers, and underscores allowed
+    - Spaces will be replaced with underscores, all other characters will be removed
+  - Will begin with a lower case letter
+  - Will be unique
+    - Random characters will be added if there is a clash
+  - Will have no more than 50 characters
+    - Extra characters will be removed
+- The default display name takes the actual name, replaces underscores with spaces, and uses title case
+  - This is done when importing an instrument using a .zip file
+  - The result is almost always incorrect
+  - You will almost always have to fix it manually
+- In development mode, changing the display name will change the actual name (subject to the rules above)
+- In production mode, changing the display name will not affect the actual name (so please don't put `demo_` in the name - it will be stuck there)
+  - Do not change form names for forms that have collected data
 
-Do we need good variable/form names? No. We could give random characters to everything, as long as there are no duplicates. But doing so will make everything else intractable. We will _want_ good names.
+### Field labels
 
-## Field labels
-
-- Variable names may have limited ability to express the full nature of variables
-- Field labels will allow a more detailed description, and fulfills this function in the data dictionary
-- Field labels are also what get displayed in forms and more importantly surveys
-  - Field labels might need to incorporate HTML and inline CSS to prettify content
-  - Data dictionary may be harder to read with the addition of HTML tags
+- Variable names are (soft) limited to 26 characters and unlikely to give a clear self-description
+- Field labels contain the actual text that gets displayed, and allow more detailed descriptions
+- Field labels should contain the answers when looking up the data dictionary and asking what variables mean
+- Field labels might contain inline styling/formatting required by some instruments
+  - Might become harder to read because of the HTML tags
 
 ### HTML elements
 
-- `<div>` and `<p>`
-  - Use for styling a block of text, _e.g._ block indentation
-  - Interchangable in most cases, but one might be preferred over the other in some situations (might have something to do with REDCap's default styling for each)
-  - Use `<div>` for indenting labels within instruments
-    - `<p>` has a surprising effect of reducing font size with indentation level &mdash; Surprises are bad
-  - Use `<p>` for the survey queue custom message
-    - Text in `<div>` will not wrap, and long sentences might trail out of the viewport
-- `<span>` and `<font>`
-  - Use when applying a style within a line, or limited to one line
-  - Do not use for block indentation
-  - `<font>` might require less code in some cases
-- Others:
-  - `<strong>`, `<em>`, `<u>`, `<b>`, `<i>`, `<h1>`, ..., `<h6>`, ...
-
-### Newlines (Line breaks)
-
-- Avoid newlines if possible (use `<br />` instead)
-  - Newlines will mess up the data dictionary
-    - The number of lines in the data dictionary will not match the number of fields in the instrument (after accounting for the header)
-    - Not a major consequence, but best to avoid unnecessary discrepancies
-    - Suggestion:
-      - Use newlines when first creating a field, because it's easier to read
-      - Once finalized, replace all newlines with `<br />`
-- HTML tables will have to be done in a single line
-  - If not, all the newlines will accumulate into a massive blank space above the table
-  - Does not apply when using the Rich Text Editor
-
-### Indentation
-
-- Currently using `<... style="margin: 0 0 0 10%;">...</...>` for one level of indentation for non-descriptive fields
-- +10% for each level of indentation
-- Descriptive fields will require half the percentage for a similar indentation level
+- Containers
+  - `<div>`
+    - When in doubt, use `<div>`
+    - One exception: Custom text to display at top of survey queue &mdash; use `<p>` instead
+  - `<p>`
+    - Avoid using with "indentations" (_i.e._ `style="margin: 0 0 0 10%;"`), font size gets affected for some reason
+  - `<span>`
+    - The preferred option when text is guaranteed to be one line
+    - Error messages are displayed properly
+  - `<font>`
+    - Most likely used as `<font color="red">...</font>`
+    - Useful to reduce volume of HTML
+- Others
+  - `<strong>/<b>`, `<em>/<i>`, `<u>`
+  - `<br />`, `<hr />`
+  - `<h1>`, ..., `<h6>`
+  - ...
 
 ### Unbold
 
-- `<... style="font-weight: normal;">...</...>` or `<... style="font-weight: lighter;">...</...>`
+- `style="font-weight: normal;"` or `style="font-weight: lighter;"`
+
+### Indentation
+
+- One level of indentation with
+  - `style="margin: 0 0 0 10%;"` (for non-descriptive fields)
+  - `style="margin: 0 0 0 5%;"` (for descriptive fields)
+- + 10% (or 5%) for each additional level of indentation
+
+### Newlines (or line breaks)
+
+- Newlines will mess up the data dictionary, avoid or replace with `<br />` if possible
+- Avoid newlines in
+  - Field labels
+    - Or activate the Rich Text Editor if you refuse to comply
+  - Branching logic
+  - Calculated field
+  - Action tags
+- Newlines in survey queue logic is OK, and highly recommended! :thumbsup:
+  - That is, until they implement some way to export the survey queue logic
 
 ### Embedded fields
 
-- Will likely involve tables in most cases
-  - Can make use of the Rich Text Editor to help create tables
-  - Adjust column widths (and other attributes) in the HTML source code
-  - Suggestion:
-    - "Optimize" using 2-3 rows before adding the rest (for larger tables)
-  - HTML source code generated by the Rich Text Editor may not be the most efficient
-    - Just like VBA code generated by the Macro Recorder
-    - This might massively bloat up the data dictionary
-    - Determine the "majority" style of the table and apply it
-    - Then tend to individual exceptions
+- If it involves tables, use the Rich Text Editor to help
+  - Adjust attributes in the HTML source code
+  - Most important would be column widths
+  - For larger tables, optimize with a few rows first
+  - Reduce the volume of HTML by deciding where to apply styles
 - Embedding to a checkbox field
   - _Will not work with enhanced buttons_ &mdash; the field(s) will not appear
   - _i.e._ a checkbox field with an "Other(s)" option cannot have _both_ an embedded field and enhanced buttons activated
@@ -115,38 +113,38 @@ Do we need good variable/form names? No. We could give random characters to ever
 ### Non-standard characters
 
 - Watch out for these &mdash; They might disappear, or be replaced with a box/hyphen/question mark
+  - Tip: Avoid using Excel to edit CSV
 - Some listed below:
 
 HTML       | Symbol
-:---------:|:-----:
+:---------:|:--------:
 `&mdash;`  | &mdash;
 `&ge;`     | &ge;
 `&eacute;` | &eacute;
+
+<hr />
 
 ## Operators and functions
 
 ### Comparison operators
 
-- Equality `=` and inequality `<>`
-  - To standardize practice, quote values compared against
-  - There is an advantage in doing so for branching logic
-    - If branching logic is `[var] = '0'`, field will not appear until `[var]` has a value of `'0'`
-    - If branching logic is `[var] = 0`, field will always be visible until `[var]` has a value not equal to `'0'`
-  - What type coercion goes on behind the scenes is a mystery...
+- `=` and `<>`
+  - Quote all values (including integers)
+    - There is an advantage for branching logic of `[var] = '0'` over `[var] = 0`
+    - For other integers, there should be no difference
 - `<`, `>`, `<=`, and `>=`
-  - _Do not_ quote numeric values
+  - _Do not_ quote anything
+- Comparing dates
+  - Must use `datediff()`, or it will be a string comparison
 
 ### Calculations
 
 - Summation of variables
   - `[var_1] + [var_2] + ... + [var_n]` will not ignore blanks
   - `sum([var_1], [var_2], ..., [var_n])` will ignore blanks
-  - Choose the appropriate one
-    - First one by default
-    - If expecting blanks, second one
-  - For simple surveys where all fields are required, there is no difference
 - `datediff()`
   - Signature: `datediff([date1], [date2], "units", "date format", Return Signed Value)`
+  - Most likely use: `datediff([date1], [date2], 'd', true)`
   - Calculation is `[date2] - [date1]`, results returned in the unit specified
   - _Always return signed values_
     - _Especially_ when using `datediff("today", [date2], 'd', true)`, where `[date2]` is in the future
@@ -154,7 +152,7 @@ HTML       | Symbol
   - "today"
     - Avoid using it if possible
     - If using it, avoid storing values that depend on calculations involving it
-    - If storing values that depend on it... haiz... [be prepared](https://www.youtube.com/watch?v=zPUe7O3ODHQ&t=138s) that the values will be inaccurate
-- Giving Rule H a break
+    - If storing values that depend on it... haiz... [be prepared](https://www.youtube.com/watch?v=zPUe7O3ODHQ&t=138s) for inaccuracies
+- Less stress on Rule H
   - Round off all values with decimal places
   - How many decimal places? Someone should know about the [uncertainty of the measurements](https://www.youtube.com/watch?v=GtOGurrUPmQ&t=280s)
