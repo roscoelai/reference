@@ -6,6 +6,11 @@ The uninitiated might have some difficulty appreciating some of the pointers her
 
 ## Instrument Design
 
+### Update
+
+- `[var1] > [var2] + 2` is **_not_** the same as `[var1] - [var2] > 2`
+  - omg...
+
 ### Variable names (or field names, column names)
 
 - Rules
