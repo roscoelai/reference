@@ -2,32 +2,21 @@
 
 > _On a Windows machine_
 
-## 1. Git for Windows SDK
+## Git for Windows SDK
 
-1. Download [Git for Windows SDK](https://github.com/git-for-windows/build-extra/releases) - [[git-sdk-installer-1.0.8-64.7z.exe](https://github.com/git-for-windows/build-extra/releases/download/git-sdk-1.0.8/git-sdk-installer-1.0.8-64.7z.exe)]
+- Read the ["Installing the SDK" section of the technical overview](https://github.com/git-for-windows/git/wiki/Technical-overview#installing-the-sdk)
+  - [Git for Windows SDK](https://github.com/git-for-windows/build-extra/releases)
+    - [[git-sdk-installer-1.0.8-64.7z.exe](https://github.com/git-for-windows/build-extra/releases/download/git-sdk-1.0.8/git-sdk-installer-1.0.8-64.7z.exe)]
+  - Extract somewhere (_e.g._ `C:\git-sdk-64`)
+  - Run `git-bash.exe` (and pin to taskbar)
+  - `sdk init git`
+  - `pacman -Syu`
+    - [pacman manual](https://archlinux.org/pacman/pacman.8.html)
 
-2. Extract to a directory, determined by preference and privilege (_e.g._ `C:\git-sdk-64`), while following [installation instructions](https://github.com/git-for-windows/git/wiki/Technical-overview#installing-the-sdk)
+- Create some directories
+  - `mkdir -p '/opt' "/home/${USERNAME}"`
 
-```bash
-sdk init git
-```
-
-3. Run and pin `git-bash.exe` to taskbar
-
-4. Update packages (learn about [pacman](https://archlinux.org/pacman/pacman.8.html))
-
-```bash
-pacman -Syu
-```
-
-5. Create some directories:
-
-```bash
-mkdir -p '/opt'
-mkdir -p "/home/${USERNAME}"
-```
-
-6. Create/Edit some config files:
+- Create/Edit some config files
 
 ```bash
 printf "Transparency=medium\nWindow=full" > /etc/minttyrc
@@ -37,6 +26,7 @@ if [ -f /etc/profile-original ]; then
 else
 	cp /etc/profile /etc/profile-original
 fi
+
 h="/home/${USERNAME}"
 sed -i "28i \
 HOME='${h}'\n\
@@ -45,140 +35,93 @@ HOMEPATH='${h}'\n\
 HISTFILE='${h}/.bash_history'\n" /etc/profile
 ```
 
-7. Remove some packages
+- Remove/Add some packages:
+  - `pacman -Rs $(pacman -Qqs i686)`
+  - `pacman -Rs mingw-w64-x86_64-xpdf-tools`
+  - `pacman -S tree mingw-w64-x86_64-poppler`
 
-```bash
-pacman -Rs $(pacman -Qqs i686)
-pacman -Rs mingw-w64-x86_64-xpdf-tools
-```
+- Set some configs for git
+  - `git config --global user.email user@email.com`
+  - `git config --global user.name "First Last"`
 
-8. Add some packages
+- If there are error messages on welcome, have a look at `/etc/profile.d/git-sdk.sh`
 
-```bash
-pacman -S tree
-pacman -S mingw-w64-x86_64-poppler
-```
+---
 
-9. Set some global configs for git
+## Miniconda
 
-```bash
-git config --global core.askPass ""
-git config --global credential.helper ""
-git config --global user.name "John Doe"
-git config --global user.email johndoe@example.com
-```
+- [What is Conda?](https://conda.io/projects/conda/en/latest/index.html)
 
-10. There might be some error messages on welcome, which may require editing `/etc/profile.d/git-sdk.sh`
+- Download [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+  - [[Miniconda3-latest-Windows-x86_64.exe](https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe)]
+  - [[Miniconda3-py39_4.10.3-Windows-x86_64.exe](https://repo.anaconda.com/miniconda/Miniconda3-py39_4.10.3-Windows-x86_64.exe)]
 
-## 2. Miniconda
+- Extract somewhere (_e.g._ `/opt/Miniconda3`)
 
-1. Download [Miniconda](https://docs.conda.io/en/latest/miniconda.html) - [[Miniconda3-latest-Windows-x86_64.exe](https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe)]
-
-2. Extract to a directory in `/opt` (_e.g._ `/opt/Miniconda3`)
-
-3. Add the following to `~/.bashrc` (to access conda command prompt using `conda`)
+- Add the following to `~/.bashrc`
 
 ```bash
 conda() {
-    local miniconda3="${EXEPATH}\\opt\\Miniconda3"
-    local activate="${miniconda3}\\Scripts\\activate.bat"
+    local miniconda3="${EXEPATH}/opt/Miniconda3"
+    local activate="${miniconda3}/Scripts/activate.bat"
     start cmd //k "${activate}" "${miniconda3}"
 }
 ```
 
-4. Learn about [conda](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html)
+- Set some configs for conda
+  - `conda config --add channels conda-forge`
+  - `conda config --set channel_priority strict`
 
-5. Open conda command prompt and install [mamba](https://github.com/mamba-org/mamba)
+- Install [mamba](https://github.com/mamba-org/mamba)
+  - `conda install mamba -n base -c conda-forge`
 
-```
-conda config --add channels conda-forge
-conda config --set channel_priority strict
-conda install mamba -n base -c conda-forge
-```
+- [Managing environments manual](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
 
-6. Learn about [managing environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
+- Create some environments
+  - [MNE](https://mne.tools/stable/install/index.html)
+    - `mamba create --name=mne --channel=conda-forge mne`
+  - [PsychoPy](https://www.psychopy.org/download.html)
+    - Environment file [psychopy-env.yml](https://raw.githubusercontent.com/psychopy/psychopy/master/conda/psychopy-env.yml)
+    - `mamba env create -n psychopy -f psychopy-env.yml`
 
-7. Create a new environment using a `environment.yaml` file (_e.g._ [environment.yml](https://raw.githubusercontent.com/mne-tools/mne-python/main/environment.yml))
+---
 
-```
-mamba env update --file environment.yml
-```
+## R, RStudio, Rtools40
 
-8. Or create a new envrionment manually
+- Visit [CRAN](https://cran.r-project.org/index.html)
+  - [[R-4.1.1-win.exe](https://cran.r-project.org/bin/windows/base/R-4.1.1-win.exe)]
+  - Extract somewhere (_e.g._ `/opt/R-4.1.1`)
+  - Add the following to `~/.bashrc`
+    - `export PATH="${PATH}:/opt/R-4.1.1/bin/x64"`
 
-```
-mamba create -n env1 python ipython jupyterlab matplotlib numpy openpyxl pandas scikit-learn scipy spyder statsmodels
-```
+- Get [RStudio](https://www.rstudio.com/products/rstudio/download/)
+  - [[RStudio-2021.09.0-351.zip](https://download1.rstudio.org/desktop/windows/RStudio-2021.09.0-351.zip)]
+  - Extract somewhere (_e.g._ `/opt/RStudio-2021.09.0-351`)
+  - Add the following to `~/.bashrc`
+    - `export PATH="${PATH}:/opt/RStudio-2021.09.0-351/bin"`
 
-## 3. R/RStudio/Rtools40
+- (Optional) Get [Rtools40](https://cran.r-project.org/bin/windows/Rtools/)
+  - [[rtools40v2-x86_64.exe](https://cran.r-project.org/bin/windows/Rtools/rtools40v2-x86_64.exe)]
 
-1. Download R from [The Comprehensive R Archive Network](https://cran.r-project.org/) - [[R-4.1.0-win.exe](https://cran.r-project.org/bin/windows/base/R-4.1.0-win.exe)]
+- [Using RStudio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects)
+  - Very useful for organizing work
+  - Especially for collaboration
 
-2. Download [RStudio Desktop](https://rstudio.com/products/rstudio/download/) - [[RStudio-1.4.1717.zip](https://download1.rstudio.org/desktop/windows/RStudio-1.4.1717.zip)]
+---
 
-3. Extract to directories in `/opt` (_e.g._ `/opt/R-4.1.0` and `/opt/RStudio-1.4.1717`)
+## Others
 
-4. Add the following to `~/.bashrc` (Add `rstudio`, `Rscript`, `Rgui`, `R`, ... to PATH)
+- Rust
+  - `pacman -S mingw-w64-x86_64-rust`
+  - 😊
+  - Have a look at [rustup](https://rustup.rs/)
+- Go
+  - `pacman -S mingw-w64-x86_64-go`
+  - 😊
+- [Java JDK](https://jdk.java.net/)
+  - [[openjdk-17.0.1_windows-x64_bin.zip](https://download.java.net/java/GA/jdk17.0.1/2a2082e5a09d4267845be086888add4f/12/GPL/openjdk-17.0.1_windows-x64_bin.zip)]
+  - Extract somewhere (_e.g._ `/opt/openjdk-17.0.1`)
+  - Add the following to `~/.bashrc`
+    - `export PATH="/opt/jdk-17.0.1/bin:${PATH}"`
 
-```bash
-export PATH="${PATH}:/opt/R-4.1.0/bin/x64:/opt/RStudio-1.4.1717/bin"
-alias rstudio='start rstudio'
-```
 
-5. Learn more about [using projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects)
-
-6. (Optional) Download [Rtools40](https://cran.r-project.org/bin/windows/Rtools/) - [[rtools40v2-x86_64.exe](https://cran.r-project.org/bin/windows/Rtools/rtools40v2-x86_64.exe)] and follow the installation instructions
-
-## 4. Java
-
-1. Download [OpenJDK](https://jdk.java.net/16/) - [[openjdk-16.0.1_windows-x64_bin.zip](https://download.java.net/java/GA/jdk16.0.1/7147401fd7354114ac51ef3e1328291f/9/GPL/openjdk-16.0.1_windows-x64_bin.zip)]
-
-2. Extract to a directory in `/opt` (_e.g._ `/opt/openjdk-16.0.1`)
-
-3. Add the following to `~/.bashrc`
-
-```bash
-export PATH="/opt/jdk-16.0.1/bin:${PATH}"
-```
-
-## 5. Go
-
-```bash
-pacman -S mingw-w64-x86_64-go
-```
-
-😊
-
-## 6. Rust
-
-```bash
-pacman -S mingw-w64-x86_64-rust
-```
-
-😊
-
-## 7. Julia
-
-1. Download [Julia](https://julialang.org/downloads/) - [[julia-1.6.1-win64.zip](https://julialang-s3.julialang.org/bin/winnt/x64/1.6/julia-1.6.1-win64.zip)]
-
-2. Extract to a directory in `/opt` (_e.g._ `/opt/julia-1.6.1`)
-
-3. Add the following to `~/.bashrc`
-
-```bash
-export PATH="${PATH}:/opt/julia-1.6.1/bin"
-```
-
-4. Add packages
-
-```julia
-julia> ]
-(@v1.6) pkg> add CSV DataFrames Plots Pluto
-```
-
-5. Launch Pluto notebook
-
-```julia
-julia> import Pluto
-julia> Pluto.run(launch_browser = true)
-```
