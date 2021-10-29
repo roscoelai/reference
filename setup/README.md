@@ -38,7 +38,7 @@ HISTFILE='${h}/.bash_history'\n" /etc/profile
 - Remove/Add some packages:
   - `pacman -Rs $(pacman -Qqs i686)`
   - `pacman -Rs mingw-w64-x86_64-xpdf-tools`
-  - `pacman -S tree mingw-w64-x86_64-poppler`
+  - `pacman -S mingw-w64-x86_64-github-cli mingw-w64-x86_64-imagemagick mingw-w64-x86_64-poppler tree`
 
 - Set some configs for git
   - `git config --global user.email user@email.com`
