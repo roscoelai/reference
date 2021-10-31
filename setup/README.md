@@ -93,6 +93,8 @@ conda() {
   - Extract somewhere (_e.g._ `/opt/R-4.1.1`)
   - Add the following to `~/.bashrc`
     - `export PATH="${PATH}:/opt/R-4.1.1/bin/x64"`
+  - Add the following to `~/.Renviron`
+    - `LC_CTYPE="English_United States.1252"`
 
 - Get [RStudio](https://www.rstudio.com/products/rstudio/download/)
   - [[RStudio-2021.09.0-351.zip](https://download1.rstudio.org/desktop/windows/RStudio-2021.09.0-351.zip)]
@@ -102,6 +104,8 @@ conda() {
 
 - (Optional) Get [Rtools40](https://cran.r-project.org/bin/windows/Rtools/)
   - [[rtools40v2-x86_64.exe](https://cran.r-project.org/bin/windows/Rtools/rtools40v2-x86_64.exe)]
+  - Add the following to `~/.Renviron`
+    - `PATH="${RTOOLS40_HOME}\usr\bin;${PATH}"`
 
 - [Using RStudio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects)
   - Very useful for organizing work
