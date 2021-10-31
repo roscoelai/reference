@@ -35,7 +35,7 @@ HOMEPATH='${h}'\n\
 HISTFILE='${h}/.bash_history'\n" /etc/profile
 ```
 
-- Remove/Add some packages:
+- Remove/Add some packages
   - `pacman -Rs $(pacman -Qqs i686)`
   - `pacman -Rs mingw-w64-x86_64-xpdf-tools`
   - `pacman -S mingw-w64-x86_64-github-cli mingw-w64-x86_64-imagemagick mingw-w64-x86_64-poppler tree`
@@ -58,7 +58,11 @@ HISTFILE='${h}/.bash_history'\n" /etc/profile
 
 - Extract somewhere (_e.g._ `/opt/Miniconda3`)
 
-- Add the following to `~/.bashrc`
+- Run the following
+  - `conda init bash`
+  - `conda config --set auto_activate_base false`
+
+- Or add the following to `~/.bashrc`
 
 ```bash
 conda() {
