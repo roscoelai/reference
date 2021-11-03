@@ -93,10 +93,10 @@ conda() {
 ## R, RStudio, Rtools40
 
 - Visit [CRAN](https://cran.r-project.org/index.html)
-  - [[R-4.1.1-win.exe](https://cran.r-project.org/bin/windows/base/R-4.1.1-win.exe)]
-  - Extract somewhere (_e.g._ `/opt/R-4.1.1`)
+  - [[R-4.1.2-win.exe](https://cran.r-project.org/bin/windows/base/R-4.1.2-win.exe)]
+  - Extract somewhere (_e.g._ `/opt/R-4.1.2`)
   - Add the following to `~/.bashrc`
-    - `export PATH="${PATH}:/opt/R-4.1.1/bin/x64"`
+    - `export PATH="${PATH}:/opt/R-4.1.2/bin"`
   - Add the following to `~/.Renviron`
     - `LC_CTYPE="English_United States.1252"`
 
