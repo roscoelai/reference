@@ -12,7 +12,7 @@ pacman::p_load(...)
 ### Replace using named vector
 
 ```r
-replace_map <- function(x, mapping, standardize = FALSE) {
+replace_map <- function(x, mapping, canonicalize = FALSE) {
   #' Replace using named vector to map old values to new values
   #' 
   #' @description Replace values in a vector using a named vector to map old 
@@ -31,11 +31,35 @@ replace_map <- function(x, mapping, standardize = FALSE) {
   #' @examples
   #' replace_map(c("a1", "a2", "a3"), c(`a1` = "b1", `a2` = "b2"))
   
-  if (standardize)
-    x <- tolower(trimws(x))
+  if (canonicalize) x <- tolower(trimws(x))
   mask <- x %in% names(mapping)
   x[mask] <- mapping[x[mask]]
   x
+}
+```
+
+### SQLite
+
+```r
+pacman::p_load("DBI", "RSQLite")
+
+read_db <- function(filepath, tables = NULL, to_tibble = TRUE) {
+  con <- dbConnect(SQLite(), filepath)
+  if (is.null(tables)) tables <- dbListTables(con)
+  if (is.null(names(tables))) tables <- setNames(tables, tables)
+  dfs <- lapply(tables, \(table) dbReadTable(con, table))
+  dbDisconnect(con)
+  if (to_tibble && "tibble" %in% loadedNamespaces())
+    dfs <- lapply(dfs, as_tibble)
+  dfs
+}
+
+write_db <- function(dfs, filepath, overwrite = FALSE, append = FALSE) {
+  con <- dbConnect(SQLite(), filepath)
+  Map(function(name, df) {
+    dbWriteTable(con, name, df, overwrite = overwrite, append = append)
+  }, names(dfs), dfs)
+  dbDisconnect(con)
 }
 ```
 
@@ -118,43 +142,6 @@ xwrite <- function(x, file, ...) {
     colWidths = "auto",
     ...
   )
-}
-```
-
-### SQLite
-
-```r
-library(DBI)
-library(RSQLite)
-
-read_sqlite <- function(filepath, tables = NULL) {
-  con <- DBI::dbConnect(RSQLite::SQLite(), filepath)
-  
-  if (is.null(tables)) {
-    tables <- DBI::dbListTables(con)
-  }
-  
-  if (is.null(names(tables))) {
-    tables <- setNames(tables, tables)
-  }
-  
-  dfs <- lapply(tables, function(table) {
-    DBI::dbReadTable(con, table)
-  })
-  
-  DBI::dbDisconnect(con)
-  
-  dfs
-}
-
-write_sqlite <- function(DTs, filepath, ...) {
-  con <- DBI::dbConnect(RSQLite::SQLite(), filepath)
-  
-  Map(function(name, DT) {
-    DBI::dbWriteTable(con, name, DT, ...)
-  }, names(DTs), DTs)
-  
-  DBI::dbDisconnect(con)
 }
 ```
 
