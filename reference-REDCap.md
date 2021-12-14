@@ -10,6 +10,9 @@ The uninitiated might have some difficulty appreciating some of the pointers her
 
 - `[var1] > [var2] + 2` is **_not_** the same as `[var1] - [var2] > 2`
   - omg...
+- There is a limit to nested if statements
+  - 256?
+  - For long lookup tables, plan to break into pieces
 
 ### Variable names (or field names, column names)
 
