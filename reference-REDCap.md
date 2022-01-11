@@ -6,13 +6,23 @@ The uninitiated might have some difficulty appreciating some of the pointers her
 
 ## Instrument Design
 
-### Update
+### Updates
 
+#### Lookup tables
+- There is a limit to nested `if()` functions
+  - '256'?
+  - More like 80+
+  - For long lookup tables that break the limit, there are a few strategies:
+    - Nested `if()`s rearranged in complete/balanced binary tree form
+    - Linear combination of indicator variables (can combine with partitioning)
+    - Piecewise linear/polynomial regression
+  - Converting from linear to branched reduces lag 'significantly' (noticeable by human)
+  - All alternatives are harder to read compared to linear nested `if()`s 😞
+
+#### Logic
 - `[var1] > [var2] + 2` is **_not_** the same as `[var1] - [var2] > 2`
   - omg...
-- There is a limit to nested if statements
-  - 256?
-  - For long lookup tables, plan to break into pieces
+  - Be careful!
 
 ### Variable names (or field names, column names)
 
