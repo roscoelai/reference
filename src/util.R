@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # util.R
-# 2021-12-24
+# 2022-01-12
 
 if (!require("pacman", quietly = TRUE)) install.packages("pacman")
 pacman::p_load("data.table", "DBI", "RSQLite", "tibble")
@@ -9,13 +9,20 @@ pacman::p_load("data.table", "DBI", "RSQLite", "tibble")
 read_db <- function(filepath, tables = NULL, to_tibble = TRUE) {
   if (!file.exists(filepath))
     stop("'", filepath, "' does not exist.")
-  conn <- dbConnect(SQLite(), filepath)
-  if (is.null(tables))
-    tables <- dbListTables(conn)
-  if (is.null(names(tables)))
-    tables <- setNames(tables, tables)
-  dfs <- lapply(tables, dbReadTable, conn = conn)
-  dbDisconnect(conn)
+  dfs <- tryCatch({
+    conn <- dbConnect(SQLite(), filepath)
+    if (is.null(tables))
+      tables <- dbListTables(conn)
+    if (is.null(names(tables)))
+      tables <- setNames(tables, tables)
+    lapply(tables, dbReadTable, conn = conn)
+  }, error = \(e) {
+    message("Problem reading database.\nOriginal error message:\n", e)
+  }, finally = {
+    dbDisconnect(conn)
+  })
+  if (is.null(dfs))
+    return(NULL)
   if (to_tibble && "tibble" %in% loadedNamespaces())
     dfs <- lapply(dfs, as_tibble)
   dfs
