@@ -17,12 +17,10 @@ read_db <- function(filepath, tables = NULL, to_tibble = TRUE) {
       tables <- setNames(tables, tables)
     lapply(tables, dbReadTable, conn = conn)
   }, error = \(e) {
-    message("Problem reading database.\nOriginal error message:\n", e)
+    stop("Problem reading database.\nOriginal error message:\n", e)
   }, finally = {
     dbDisconnect(conn)
   })
-  if (is.null(dfs))
-    return(NULL)
   if (to_tibble && "tibble" %in% loadedNamespaces())
     dfs <- lapply(dfs, as_tibble)
   dfs
@@ -31,11 +29,17 @@ read_db <- function(filepath, tables = NULL, to_tibble = TRUE) {
 write_db <- function(dfs, filepath, overwrite = FALSE, append = FALSE) {
   if (is.null(names(dfs)))
     stop("Tables must have names.")
-  conn <- dbConnect(SQLite(), filepath)
-  Map(function(name, df) {
-    dbWriteTable(conn, name, df, overwrite = overwrite, append = append)
-  }, names(dfs), dfs)
-  dbDisconnect(conn)
+  tryCatch({
+    conn <- dbConnect(SQLite(), filepath)
+    Map(function(name, df) {
+      dbWriteTable(conn, name, df, overwrite = overwrite, append = append)
+    }, names(dfs), dfs)
+    message("'", filepath, "' successfully written.")
+  }, error = \(e) {
+    message("Problem writing database.\nOriginal error message:\n", e)
+  }, finally = {
+    dbDisconnect(conn)
+  })
 }
 
 db_to_csvs <- function(filepath, output = NULL, verbose = TRUE) {
