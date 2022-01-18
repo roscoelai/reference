@@ -12,12 +12,23 @@ The uninitiated might have some difficulty appreciating some of the pointers her
 - There is a limit to nested `if()` functions
   - '256'?
   - More like 80+
-  - For long lookup tables that break the limit, there are a few strategies:
-    - Nested `if()`s rearranged in complete/balanced binary tree form
-    - Linear combination of indicator variables (can combine with partitioning)
-    - Piecewise linear/polynomial regression
-  - Converting from linear to branched reduces lag 'significantly' (noticeable by human)
-  - All alternatives are harder to read compared to linear nested `if()`s 😞
+  - Linear nested `if()`s will quickly hit the limit for large tables
+  - There are a few possible strategies to handle such cases:
+    - Nested `if()`s rearranged in complete/balanced binary tree form, instead of linear
+      - Height reduced from `n` to `log(n)`
+      - Converting from linear to branched significantly reduces lag
+    - Linear combination of indicator variables multiplied by step heights (<- **this looks the most promising**)
+      - Avoid calls to `if()`
+      - Can micro-optimize by combining with balanced binary tree, but will become very unreadable
+      - Only works for numeric values
+    - Piecewise linear/polynomial regression, expressions written using Horner's method
+      - Challenging to find an equation that ends up close enough to all points
+      - Usually have to break the domain into pieces
+      - Higher-order equations tend to require coefficients with more decimal places
+      - Only works for numeric values
+  - All alternatives will probably be harder to read compared to linear nested `if()`s 😞
+  - Please avoid writing equations by hand
+    - Read the look up table(s) from _e.g._ a spreadsheet and make the computer generate the formula(e)
 
 #### Logic
 - `[var1] > [var2] + 2` is **_not_** the same as `[var1] - [var2] > 2`
