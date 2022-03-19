@@ -2,7 +2,7 @@
 
 ```bash
 # https://stackoverflow.com/a/246128
-WD="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
+WD="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &> /dev/null && pwd)"
 ```
 
 ## Read file line-by-line
