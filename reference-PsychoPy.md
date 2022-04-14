@@ -28,6 +28,18 @@ else:
     # Other events, such as 'set' or 'repel' etc.
 ```
 
+## Detecting Clicks
+
+```python
+# Coming soon!
+```
+
+## Slide Reel in a Single Routine
+
+```python
+# Coming soon!
+```
+
 ## 'Utils' (?)
 
 ```python
