@@ -1,3 +1,11 @@
+## 'Invisible Boxes' Strategy
+
+Todo:
+- For tasks that depend on slides with clickable regions
+- Positions and sizes of invisible boxes are currently hardcoded manually
+- Figure out the relationship between box positions/sizes to slide positions/sizes
+- Will still require hardcoding for relative positions/sizes, but slides may then be freely resized without breaking the correct positioning of the boxes
+
 ## Click and Drag
 
 ```python
