@@ -28,6 +28,45 @@ else:
     # Other events, such as 'set' or 'repel' etc.
 ```
 
+## Snap/Repel
+
+```python
+def within_radius(obj1_pos, obj2_pos, thresh):
+    x1, y1 = obj1_pos
+    x2, y2 = obj2_pos
+    dx, dy = x1 - x2, y1 - y2
+    return (dx * dx) + (dy * dy) <= (thresh * thresh)
+
+def within_box(obj_pos, box_pos, box_size):
+    """
+    Determine if object is within box
+    - Squared difference in x (and y) coordinates 
+    should be less than the square of half the 
+    box width (and height)
+    - That would mean the center of the object is
+    within the box boundaries
+    """
+    obj_x, obj_y = obj_pos
+    box_x, box_y = box_pos
+    box_w, box_h = box_size
+    dx, dy = obj_x - box_x, obj_y - box_y
+    hw, hh = box_w / 2, box_h / 2
+    return dx * dx < hw * hw and dy * dy < hh * hh
+
+def snapped(obj1, obj2, func, **kwargs):
+    """
+    Determine if obj1 snapped to center of obj2
+    - Check if obj1 is 'near' obj2, based on func
+    - If yes, set the obj1's position to be 
+    equal to obj2's position and return True
+    - Otherwise, do nothing and return False
+    """
+    if func(obj1.pos, obj2.pos, **kwargs):
+        obj1.pos = obj2.pos
+        return True
+    return False
+```
+
 ## Detecting Clicks
 
 ```python
@@ -61,35 +100,6 @@ def anim_linear_xy(start_xy, end_xy, n_frames):
 ## 'Utils' (?)
 
 ```python
-def within_box(obj, box):
-    """
-    Determine if object is within box
-    - Squared difference in x (and y) coordinates 
-    should be less than the square of half the 
-    box width (and height)
-    - That would mean the center of the object is
-    within the box boundaries
-    """
-    obj_x, obj_y = obj.pos
-    box_x, box_y = box.pos
-    box_w, box_h = box.size
-    dx, dy = obj_x - box_x, obj_y - box_y
-    hw, hh = box_w / 2, box_h / 2
-    return dx * dx < hw * hw and dy * dy < hh * hh
-
-def snapped(obj1, obj2, func=within_box):
-    """
-    Determine if obj1 snapped to center of obj2
-    - Check if obj1 is 'near' obj2, based on func
-    - If yes, set the obj1's position to be 
-    equal to obj2's position and return True
-    - Otherwise, do nothing and return False
-    """
-    if func(obj1, obj2):
-        obj1.pos = obj2.pos
-        return True
-    return False
-
 def hide(obj):
     obj.size = (0, 0)
     obj.autoDraw = False
