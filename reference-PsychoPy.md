@@ -40,6 +40,24 @@ else:
 # Coming soon!
 ```
 
+## Animation
+
+```python
+def anim_linear_xy(start_xy, end_xy, n_frames):
+    """
+    Calculate the coordinates at each frame for a 
+    linear translation from `start_xy` to `end_xy`.
+    """
+    x0, y0 = start_xy
+    x1, y1 = end_xy
+    steps, = (n_frames - 1),
+    dx, dy = (x1 - x0) / steps, (y1 - y0) / steps
+    xys, = [],
+    for i in range(n_frames):
+        xys.append((x0 + dx * i, y0 + dy * i))
+    return xys
+```
+
 ## 'Utils' (?)
 
 ```python
