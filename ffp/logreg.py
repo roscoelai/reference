@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 #
 # logreg.py
-# 2022-04-26
+# 2022-04-29
 
-# TODO(roscoelai): Normalize dataset before optimization
-# TODO(roscoelai): Multi-record test cases
+# TODO(roscoelai): Normalize dataset before optimization (how?)
+# TODO(roscoelai): Multi-record test cases (N > 2)
+# TODO(roscoelai): Define 'step'
+# TODO(roscoelai): Define 'epoch'
 
 from __future__ import annotations
 
@@ -67,7 +69,22 @@ class LogReg():
     def matmul(self, x: list[list[float]], y: list[list[float]]) -> list[list[float]]:
         """Matrix multiplication."""
         assert len(x[0]) == len(y)
+        if all(isinstance(y_j, (float, int)) for y_j in y):
+            return [[self.dotprod(x_i, y)] for x_i in x]
         return [[self.dotprod(x_i, y_j) for y_j in zip(*y)] for x_i in x]
+
+    @classmethod
+    def scale_range(self, x: list[list[float]]) -> list[list[float]]:
+        cols = list(zip(*x))
+        maxs = [max(col_j) for col_j in cols]
+        mins = [min(col_j) for col_j in cols]
+        new_x = []
+        for x_i in x:
+            new_x_i = []
+            for x_ij, max_j, min_j in zip(x_i, maxs, mins):
+                new_x_i.append((x_ij - min_j) / (max_j - min_j))
+            new_x.append(new_x_i)
+        return new_x
 
     def calc_z(self, x: list[list[float]], w: list | None=None) -> list[float]:
         """x: (n x m), x1: (n x (m+1)), w: ((m+1) x k), z: (n x k), k = 1"""
@@ -87,6 +104,11 @@ class LogReg():
         g = [self.activation(z_i) for z_i in z]
         self.g = g
         return self.g
+
+    def predict(self, x: list[list[float]]) -> list[float]:
+        z = self.calc_z(x)
+        g = self.calc_g(z)
+        return g
 
     def calc_loss(self, y: list[int], g: list[float] | None=None) -> list[float]:
         """y: (n x 1), g: (n x k), k = 1"""
@@ -135,31 +157,23 @@ class LogReg():
             mean_grad = sum(grads_t) / len(grads_t)
             self.w[i] -= mean_grad * learning_rate
 
-    def predict(self, x: list[list[float]]) -> list[float]:
-        z = self.calc_z(x)
-        g = self.calc_g(z)
-        return g
-
     def fit(self, x: list[list[float]], y: list[int], learning_rate: float | None=None, threshold: float | None=None, max_cycles: int | None=None) -> int:
         if learning_rate is None:
             learning_rate = self.learning_rate
         if threshold is None:
             threshold = self.threshold
         if max_cycles is None:
-            max_cycles = 10000
-        cycles = 0
-        while True:
+            max_cycles = 20000
+        for i in range(max_cycles):
             g = self.predict(x)
             loss = self.calc_loss(y, g)
             if sum(loss) < threshold:
-                self.cycles = cycles
-                return cycles
+                self.cycles = i
+                return i
             grads = self.calc_grads(x, y, g)
             self.update_w(grads, learning_rate)
-            cycles += 1
-            if cycles >= max_cycles:
-                self.cycles = cycles
-                return cycles
+        self.cycles = i + 1
+        return i + 1
 
 class TestLogReg(unittest.TestCase):
     def setUp(self):
@@ -170,47 +184,73 @@ class TestLogReg(unittest.TestCase):
         self.assertEqual(lr.w, [1, 2, 3])
 
     def test_sigmoid(self):
+        """We know sigmoid's shape, this makes sense."""
         self.assertEqual(LogReg.sigmoid(-math.log(7)), 0.12500000000000003)
         self.assertEqual(LogReg.sigmoid(-math.log(4)), 0.2)
         self.assertEqual(LogReg.sigmoid(-math.log(3)), 0.25)
-        self.assertEqual(LogReg.sigmoid(0), 0.5)
-        self.assertEqual(LogReg.sigmoid(math.log(3)), 0.75)
-        self.assertEqual(LogReg.sigmoid(math.log(4)), 0.8)
-        self.assertEqual(LogReg.sigmoid(math.log(7)), 0.875)
+        self.assertEqual(LogReg.sigmoid(0),            0.5)
+        self.assertEqual(LogReg.sigmoid(math.log(3)),  0.75)
+        self.assertEqual(LogReg.sigmoid(math.log(4)),  0.8)
+        self.assertEqual(LogReg.sigmoid(math.log(7)),  0.875)
 
     def test_sigmoid_grad(self):
-        self.assertEqual(LogReg.sigmoid_grad(0), 0)
+        """Gradient of sigmoid is never negative."""
+        self.assertEqual(LogReg.sigmoid_grad(0),    0)
         self.assertEqual(LogReg.sigmoid_grad(0.25), 0.1875)
-        self.assertEqual(LogReg.sigmoid_grad(0.5), 0.25)
+        self.assertEqual(LogReg.sigmoid_grad(0.5),  0.25)
         self.assertEqual(LogReg.sigmoid_grad(0.75), 0.1875)
-        self.assertEqual(LogReg.sigmoid_grad(1), 0)
+        self.assertEqual(LogReg.sigmoid_grad(1),    0)
 
     def test_bce(self):
+        """Two seperate curves depending on label. Error increases with 
+        distance from label, seemingly without limit."""
         self.assertEqual(LogReg.bce(0.9999, 1), 0.00010000500033334732)
-        self.assertEqual(LogReg.bce(0.999, 1), 0.0010005003335835344)
-        self.assertEqual(LogReg.bce(0.5, 1), math.log(2))
-        self.assertEqual(LogReg.bce(0.001, 1), 6.907755278982137)
+        self.assertEqual(LogReg.bce(0.999 , 1), 0.0010005003335835344)
+        self.assertEqual(LogReg.bce(0.5   , 1), math.log(2))
+        self.assertEqual(LogReg.bce(0.001 , 1), 6.907755278982137)
         self.assertEqual(LogReg.bce(0.0001, 1), 9.210340371976182)
-        self.assertEqual(LogReg.bce(0.9999, 0), 9.210340371976294)
-        self.assertEqual(LogReg.bce(0.999, 0), 6.907755278982136)
-        self.assertEqual(LogReg.bce(0.5, 0), math.log(2))
-        self.assertEqual(LogReg.bce(0.001, 0), 0.0010005003335835344)
         self.assertEqual(LogReg.bce(0.0001, 0), 0.00010000500033334732)
+        self.assertEqual(LogReg.bce(0.001 , 0), 0.0010005003335835344)
+        self.assertEqual(LogReg.bce(0.5   , 0), math.log(2))
+        self.assertEqual(LogReg.bce(0.999 , 0), 6.907755278982136)
+        self.assertEqual(LogReg.bce(0.9999, 0), 9.210340371976294)
 
     def test_bce_grad(self):
-        self.assertEqual(LogReg.bce_grad(0.999, 1), -1.001001001001001)
-        self.assertEqual(LogReg.bce_grad(0.5, 1), -2)
+        """Two seperate curves depending on label. Sign of gradient consistent 
+        with displacement from label. Magnitude of gradient increases with 
+        distance from label, seemingly without limit."""
         self.assertEqual(LogReg.bce_grad(0.001, 1), -1000)
-        self.assertEqual(LogReg.bce_grad(0.999, 0), 999.9999999999991)
-        self.assertEqual(LogReg.bce_grad(0.5, 0), 2)
+        self.assertEqual(LogReg.bce_grad(0.5  , 1), -2)
+        self.assertEqual(LogReg.bce_grad(0.999, 1), -1.001001001001001)
         self.assertEqual(LogReg.bce_grad(0.001, 0), 1.001001001001001)
+        self.assertEqual(LogReg.bce_grad(0.5  , 0), 2)
+        self.assertEqual(LogReg.bce_grad(0.999, 0), 999.9999999999991)
 
     def test_dotprod(self):
         self.assertEqual(LogReg.dotprod([1, 2, 3], [4, 5, 6]), 32)
+        with self.assertRaises(TypeError):
+            LogReg.dotprod([1, 2, 3], [4, 5, None])
+            LogReg.dotprod([1, 2, 3], [4, 5, "6"])
+            LogReg.dotprod([1, 2, 3], 6)
 
     def test_matmul(self):
+        self.assertEqual(LogReg.matmul([[1, 2, 3], [4, 5, 6]], [1, 2, 3]), [[14], [32]])
         self.assertEqual(LogReg.matmul([[1, 2, 3], [4, 5, 6]], [[1], [2], [3]]), [[14], [32]])
         self.assertEqual(LogReg.matmul([[1, 2], [3, 4]], [[5, 6], [7, 8]]), [[19, 22], [43, 50]])
+        with self.assertRaises(AssertionError):
+            LogReg.matmul([[1, 2, 3], [4, 5, 6]], [1, 2, 3, 4])
+        with self.assertRaises(TypeError):
+            LogReg.matmul([[1, 2, 3], [4, 5, 6]], [1, 2, None])
+
+    def test_scale_range(self):
+        x = [[1, 2], [3, 4], [5, 6]]
+        new_x = [[0, 0], [0.5, 0.5], [1, 1]]
+        self.assertEqual(LogReg.scale_range(x), new_x)
+        self.assertEqual(x, [[1, 2], [3, 4], [5, 6]])
+        x = [[1, 2], [3, 4], [5, 6], [9, 7]]
+        new_x = [[0, 0], [0.25, 0.4], [0.5, 0.8], [1, 1]]
+        self.assertEqual(LogReg.scale_range(x), new_x)
+        self.assertEqual(x, [[1, 2], [3, 4], [5, 6], [9, 7]])
 
     def test_calc_z(self):
         lr = LogReg([1, 2, 3])
@@ -223,6 +263,10 @@ class TestLogReg(unittest.TestCase):
     def test_calc_g(self):
         lr = LogReg()
         self.assertEqual(lr.calc_g([math.log(1)]), [0.5])
+
+    def test_predict(self):
+        lr = LogReg([1, 2, 3])
+        self.assertEqual(lr.predict([[4, 5]]), [lr.sigmoid(24)])
 
     def test_calc_loss(self):
         if not hasattr(self.lr1, "g"):
@@ -301,32 +345,45 @@ class TestLogReg(unittest.TestCase):
         self.assertEqual(self.lr1.w[2], 1.1325429483122207e-10)
         self.assertEqual(self.lr1.predict(x), [0.23147521667021978])
 
-    def test_predict(self):
-        x = [[4, 5]]
-        self.assertEqual(self.lr1.predict(x), [LogReg.sigmoid(24)])
-
     def test_fit_1(self):
+        """Single data point."""
         x = [[4, 5]]
         y = [0]
         self.assertEqual(self.lr1.w[0], 1)
         self.assertEqual(self.lr1.w[1], 2)
         self.assertEqual(self.lr1.w[2], 3)
         self.assertEqual(self.lr1.predict(x), [0.9999999999622486])
-        self.lr1.fit(x, y)
+        self.lr1.fit(x, y, learning_rate=0.5, max_cycles=10000)
         self.assertEqual(self.lr1.cycles, 2)
         self.assertEqual(self.lr1.w[0], 0.023712936589751543)
         self.assertEqual(self.lr1.w[1], -1.905148253640994)
         self.assertEqual(self.lr1.w[2], -1.8814353170512423)
         self.assertEqual(self.lr1.predict(x), [4.123177234119961e-08])
 
+    def test_fit_1_slightly_slower(self):
+        """Single data point, lower learning rate."""
+        x = [[4, 5]]
+        y = [0]
+        self.assertEqual(self.lr1.w[0], 1)
+        self.assertEqual(self.lr1.w[1], 2)
+        self.assertEqual(self.lr1.w[2], 3)
+        self.assertEqual(self.lr1.predict(x), [0.9999999999622486])
+        self.lr1.fit(x, y, learning_rate=0.42, max_cycles=10000)
+        self.assertEqual(self.lr1.cycles, 1315)
+        self.assertEqual(self.lr1.w[0], 0.15445214295286688)
+        self.assertEqual(self.lr1.w[1], -1.3821914281885361)
+        self.assertEqual(self.lr1.w[2], -1.2277392852356643)
+        self.assertEqual(self.lr1.predict(x), [9.999054743537249e-06])
+
     def test_fit_2(self):
+        """Two data points."""
         x = [[4, 5], [6, 7]]
         y = [0, 0]
         self.assertEqual(self.lr1.w[0], 1)
         self.assertEqual(self.lr1.w[1], 2)
         self.assertEqual(self.lr1.w[2], 3)
         self.assertEqual(self.lr1.predict(x), [0.9999999999622486, 0.9999999999999982])
-        self.lr1.fit(x, y)
+        self.lr1.fit(x, y, max_cycles=10000)
         self.assertEqual(self.lr1.cycles, 9447)
         self.assertEqual(self.lr1.w[0], 0.27170766819206177)
         self.assertEqual(self.lr1.w[1], -1.460914619181487)
@@ -334,13 +391,14 @@ class TestLogReg(unittest.TestCase):
         self.assertEqual(self.lr1.predict(x), [9.949427830113722e-06, 4.9651921143642956e-08])
 
     def test_fit_3(self):
+        """Two data points, different labels."""
         x = [[4, 5], [6, 7]]
         y = [0, 1]
         self.assertEqual(self.lr1.w[0], 1)
         self.assertEqual(self.lr1.w[1], 2)
         self.assertEqual(self.lr1.w[2], 3)
         self.assertEqual(self.lr1.predict(x), [0.9999999999622486, 0.9999999999999982])
-        self.lr1.fit(x, y)
+        self.lr1.fit(x, y, max_cycles=10000)
         self.assertEqual(self.lr1.cycles, 10000)
         self.assertEqual(self.lr1.w[0], -20.11666097319304)
         self.assertEqual(self.lr1.w[1], 12.817878829664442)
