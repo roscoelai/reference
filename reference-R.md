@@ -9,6 +9,20 @@ if (!require("pacman", quietly = TRUE)) install.packages("pacman")
 pacman::p_load(...)
 ```
 
+### Source Rscript
+
+```r
+# https://stackoverflow.com/a/47178017
+
+main <- function() {
+  # Do stuff...
+}
+
+if (sys.nframe() == 0) {
+  main()
+}
+```
+
 ### Replace using named vector
 
 ```r
