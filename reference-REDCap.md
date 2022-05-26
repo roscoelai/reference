@@ -6,9 +6,12 @@ The uninitiated might have some difficulty appreciating some of the pointers her
 
 ## Instrument Design
 
-### Updates
+### `@DEFAULT` gotchas
+- Default values are only loaded when a _brand new_ form record is created
+- Default values will not be loaded on a pre-existing form record
+- It makes sense, but have to consider order of operations
 
-#### Lookup tables
+### Implementing lookup tables
 - There is a limit to nested `if()` functions
   - '256'?
   - More like 80+
@@ -30,10 +33,9 @@ The uninitiated might have some difficulty appreciating some of the pointers her
   - Please avoid writing equations by hand
     - Read the look up table(s) from _e.g._ a spreadsheet and make the computer generate the formula(e)
 
-#### Logic
+### Logic gotchas
 - `[var1] > [var2] + 2` is **_not_** the same as `[var1] - [var2] > 2`
-  - omg...
-  - Be careful!
+  - This one is really pushing it...
 
 ### Variable names (or field names, column names)
 
