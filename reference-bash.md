@@ -5,6 +5,7 @@
 WD="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &> /dev/null && pwd)"
 
 # https://mywiki.wooledge.org/BashFAQ/028
+# Works OK with `script.sh`, but not `bash script.sh`
 WD="$(realpath "${BASH_SOURCE%/*}/")"
 ```
 
