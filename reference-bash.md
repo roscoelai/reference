@@ -2,18 +2,18 @@
 
 ```bash
 # https://stackoverflow.com/a/246128
-WD="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &> /dev/null && pwd)"
+readonly WD="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &> /dev/null && pwd)"
 
 # https://mywiki.wooledge.org/BashFAQ/028
-# Works OK with `./script.sh`, but not `bash script.sh`
-WD="$(realpath "${BASH_SOURCE%/*}/")"
+# Works OK with `./script.sh`, but not `bash script.sh`, so prefer the above
+readonly WD="$(realpath "${BASH_SOURCE%/*}/")"
 ```
 
-## Semaphore
+## Queue
 
 ```bash
 # https://unix.stackexchange.com/a/436713
-N=20
+readonly N=20
 for i in {1..100}; do
     (
         # Do stuff...
@@ -22,6 +22,31 @@ for i in {1..100}; do
     (( "$(jobs -pr | wc -l)" >= "$N" )) && wait -n
 done
 wait
+```
+
+## `find` to array
+
+```bash
+mapfile -d '' arr < <( find \
+    "$path" \
+    -type d \
+    -not \( -path "*glob1*" -prune \) \
+    \( -path "*glob2*" -o "*glob3*" \) \
+    -iregex "regex1" \
+    -printf "%P/\0" )
+```
+
+## Output array text
+
+```bash
+printf "%s\n" "${arr[@]}"
+printf "%s\0" "${arr[@]}"
+```
+
+## Array to `rsync`
+
+```bash
+rsync --verbose --archive --recursive --files-from=<( printf "%s\0" "${arr[@]}" ) --from0 -- "$src" "$dest"
 ```
 
 ## Read file line-by-line
