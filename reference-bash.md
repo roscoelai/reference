@@ -49,6 +49,12 @@ printf "%s\0" "${arr[@]}"
 rsync --verbose --archive --recursive --files-from=<( printf "%s\0" "${arr[@]}" ) --from0 -- "$src" "$dest"
 ```
 
+## Print repeated strings
+
+```bash
+printf "1%.s " {1..20}
+```
+
 ## Read file line-by-line
 
 ```bash
