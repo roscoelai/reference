@@ -2,17 +2,21 @@
 
 ## General
 
-- [How to setup work environment](https://github.com/roscoelai/reference/tree/master/setup)
+- [Setting up work environment](setup/README.md)
 
 ## Python
 
-- Python script template - [[template.py](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.py)]
+- Python script template - [[template.py](src/template.py)]
 
 ## R
 
-- [Some useful R Functions](https://github.com/roscoelai/gen-ref/blob/master/reference-R.md)
-- R Markdown script template - [[template.Rmd](https://raw.githubusercontent.com/roscoelai/reference/master/src/template.Rmd)]
+- [Some useful snippets](reference-R.md)
+- R Markdown script template - [[template.Rmd](src/template.Rmd)]
+
+## Bash
+
+- [Some useful snippets](reference-bash.md)
 
 ## REDCap
 
-- [REDCap cheatsheet](https://github.com/roscoelai/reference/blob/master/reference-REDCap.md)
+- [Some lamentations for REDCap](reference-REDCap.md)
