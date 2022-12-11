@@ -85,3 +85,13 @@ while IFS= read -r subjid <&9; do
     # Do stuff...
 done 9< "${INPUT_FILE}"
 ```
+
+## Reduce PDF size
+
+https://askubuntu.com/a/256449
+```bash
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile="$out" "$in"
+
+# MinGW
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=//ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile="$out" "$in"
+```
