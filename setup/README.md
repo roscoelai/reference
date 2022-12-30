@@ -59,64 +59,72 @@ git config --global user.name "First Last"
 
 ---
 
-## Miniconda
+## Conda
 
-- [What is Conda?](https://conda.io/projects/conda/en/latest/index.html)
+- [Mambaforge](https://github.com/conda-forge/miniforge/releases)
+  - [Mambaforge-22.9.0-2-Windows-x86_64.exe](https://github.com/conda-forge/miniforge/releases/download/22.9.0-2/Mambaforge-22.9.0-2-Windows-x86_64.exe)
+  - [Mambaforge-22.9.0-2-Windows-x86_64.exe.sha256](https://github.com/conda-forge/miniforge/releases/download/22.9.0-2/Mambaforge-22.9.0-2-Windows-x86_64.exe.sha256)
+  - SHA256 hash: `625ed0a94588dd7e38b108e907ed51c78bbaafdb7a50a699864033c963d47189`
+  - `echo export PATH='"${PATH}:/opt/mambaforge/Scripts"' >> ~/.bashrc`
 
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-  - [[Miniconda3-py39_4.12.0-Windows-x86_64.exe](https://repo.anaconda.com/miniconda/Miniconda3-py39_4.12.0-Windows-x86_64.exe)]
-  - Extract somewhere (_e.g._ `/opt/Miniconda3`)
-  - Add the following to `~/.bashrc`
-    - `export PATH="${PATH}:/opt/Miniconda3/Scripts"`
+  - [Miniconda3-py310_22.11.1-1-Windows-x86_64.exe](https://repo.anaconda.com/miniconda/Miniconda3-py310_22.11.1-1-Windows-x86_64.exe)
+  - SHA256 hash: `2e3086630fa3fae7636432a954be530c88d0705fce497120d56e0f5d865b0d51`
+  - `echo export PATH='"${PATH}:/opt/miniconda3/Scripts"' >> ~/.bashrc`
+  - Install [mamba](https://github.com/mamba-org/mamba) if not using Mambaforge (**[not recommended](https://mamba.readthedocs.io/en/latest/installation.html)**)
+    - `conda install mamba -n base -c conda-forge`
+
+- Configuration(s)
 
 ```bash
+conda init cmd.exe
 # conda init bash
-conda config --set auto_activate_base false
+conda config --append channels defaults
+conda config --add channels bioconda
 conda config --add channels conda-forge
 conda config --set channel_priority strict
+conda config --set auto_activate_base false
+conda config --show
 ```
 
-- Install [mamba](https://github.com/mamba-org/mamba)
-  - `conda install mamba -n base -c conda-forge`
-
-- [Managing environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
-
 - Create environment(s)
-  - [MNE](https://mne.tools/stable/install/index.html)
-    - `mamba create --override-channels --channel=conda-forge --name=mne mne`
-    - `mamba create -n mne python=3.9 jupyterlab mne nodejs openpyxl pytorch`
+
+```bash
+conda activate base
+mamba create -n ds jupyterlab nodejs openpyxl matplotlib seaborn scikit-learn  # python ipython numpy pandas
+mamba create -n mne jupyterlab nodejs mne
+mamba create -n pytorch jupyterlab nodejs pytorch
+```
 
 ---
 
-## R, RStudio, (optional) RTools
+## R
 
-- R from [CRAN](https://cran.r-project.org/index.html)
-  - [[R-4.2.1-win.exe](https://cran.r-project.org/bin/windows/base/R-4.2.1-win.exe)]
-  - Extract somewhere (_e.g._ `/opt/R-4.2.1`)
-  - Add the following to `~/.bashrc`
-    - `export PATH="${PATH}:/opt/R-4.2.1/bin"`
+- [CRAN](https://cran.r-project.org)
+  - [R-4.2.2-win.exe](https://cran.r-project.org/bin/windows/base/R-4.2.2-win.exe)
+  - [md5sum.R-4.2.2.txt](https://cran.r-project.org/bin/windows/base/md5sum.R-4.2.2.txt)
+  - MD5 hash: `eaa06020ec663918c580050038f1d1d5`
+  - `echo export PATH='"${PATH}:/opt/R-4.2.2/bin/x64"' >> ~/.bashrc`
 
-- [RStudio](https://www.rstudio.com/products/rstudio/download/)
-  - [[RStudio-2022.07.1-554.zip](https://download1.rstudio.org/desktop/windows/RStudio-2022.07.1-554.zip)]
-  - Extract somewhere (_e.g._ `/opt/RStudio-2022.07.1-554`)
-  - Add the following to `~/.bashrc`
-    - `export PATH="${PATH}:/opt/RStudio-2022.07.1-554/bin"`
+- [RStudio](https://posit.co/download/rstudio-desktop)
+  - [RStudio-2022.12.0-353.zip](https://download1.rstudio.org/electron/windows/RStudio-2022.12.0-353.zip)
+  - SHA256 hash: `8c351ee495736d5d6352b437f329d5ce99daa3f7a112dd96a838a49073d72bc8`
+  - `echo export PATH='"${PATH}:/opt/RStudio-2022.12.0-353"' >> ~/.bashrc`
 
-- (Optional) [RTools](https://cran.r-project.org/bin/windows/Rtools/)
-  - [[rtools42-5253-5107-signed.exe](https://cran.r-project.org/bin/windows/Rtools/rtools42/files/rtools42-5253-5107-signed.exe)]
+- (Optional) [Rtools42 for Windows](https://cran.r-project.org/bin/windows/Rtools/rtools42/rtools.html)
+  - [rtools42-5355-5357.exe](https://cran.r-project.org/bin/windows/Rtools/rtools42/files/rtools42-5355-5357.exe)
 
 - [Using RStudio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects)
-  - Very useful for organizing work, especially for collaboration (relative paths, ...)
 
 ---
 
 ## Java
 
-- [Java JDK](https://jdk.java.net/)
-  - [[openjdk-18.0.2.1_windows-x64_bin.zip](https://download.java.net/java/GA/jdk18.0.2.1/db379da656dc47308e138f21b33976fa/1/GPL/openjdk-18.0.2.1_windows-x64_bin.zip)]
-  - Extract somewhere (_e.g._ `/opt/openjdk-18.0.2.1`)
-  - Add the following to `~/.bashrc`
-    - `export PATH="/opt/openjdk-18.0.2.1/bin:${PATH}"`
+- [Java JDK](https://jdk.java.net)
+  - [openjdk-19.0.1_windows-x64_bin.zip](https://download.java.net/java/GA/jdk19.0.1/afdd2e245b014143b62ccb916125e3ce/10/GPL/openjdk-19.0.1_windows-x64_bin.zip)
+  - [openjdk-19.0.1_windows-x64_bin.zip.sha256](https://download.java.net/java/GA/jdk19.0.1/afdd2e245b014143b62ccb916125e3ce/10/GPL/openjdk-19.0.1_windows-x64_bin.zip.sha256)
+  - SHA256 hash: `adb1a33c07b45c39b926bdeeadf800f701be9c3d04e0deb543069e5f09856185`
+  - `echo export PATH='"/opt/openjdk-19.0.1/bin:${PATH}"' >> ~/.bashrc`
 
 ---
 
