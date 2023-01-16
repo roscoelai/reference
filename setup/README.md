@@ -94,6 +94,7 @@ conda activate base
 mamba create -n ds jupyterlab nodejs openpyxl matplotlib seaborn scikit-learn  # python ipython numpy pandas
 mamba create -n mne jupyterlab nodejs mne
 mamba create -n pytorch jupyterlab nodejs pytorch
+mamba create -n aio aiohttp aiodns brotli git sqlite uvloop
 ```
 
 ---
