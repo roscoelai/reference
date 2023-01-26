@@ -96,7 +96,7 @@ mamba create -n mne jupyterlab nodejs mne
 mamba create -n pytorch jupyterlab nodejs pytorch
 mamba create -n aio aiohttp aiodns brotli git sqlite uvloop
 mamba create -n main git python screen sqlite
-mamba create -n r-h2o r-dbi r-h2o r-mice r-sqlite
+mamba create -n r-h2o r-dbi r-h2o r-mice r-optparse r-sqlite
 ```
 
 ---
