@@ -2,6 +2,59 @@
 
 > _On a Windows machine_
 
+- 2 choices:
+  - PortableGit
+  - Git for Windows SDK
+- Choose PortableGit for this round
+  - PortableGit is lighter, but has no package manager
+  - Programs that do not come bundled will have to be obtained manually
+  - Top on the list (_must have_) is `rsync`
+  - Others might include: `Python`, `Poppler`, `pngquant`, `ImageMagick`, `FFmpeg`, `GitHub CLI` (pls go learn SSH instead)
+  - Updates will also be manual
+
+## PortableGit
+
+Where you choose to put things, and how you manage user environment variables, is up to you.
+
+- https://git-scm.com/download/win
+- [PortableGit-2.40.0-64-bit.7z.exe](https://github.com/git-for-windows/git/releases/download/v2.40.0.windows.1/PortableGit-2.40.0-64-bit.7z.exe)
+
+### File hash in PowerShell
+
+```powershell
+Get-Help Get-FileHash
+Get-FileHash .\path\to\file.ext -Algorithm MD5
+```
+
+### Rsync
+
+- [Zstandard](https://github.com/facebook/zstd/releases)
+  - Symantec might not recognize the lastest one, so go for something older
+- https://packages.msys2.org/package/rsync
+  - [rsync-3.2.7-2-x86_64.pkg.tar.zst](https://mirror.msys2.org/msys/x86_64/rsync-3.2.7-2-x86_64.pkg.tar.zst)
+    - SHA256: `786233bb7f3e8011182997330d74c21226c4085783d474eb448b39dec7ec566e`
+- https://packages.msys2.org/package/libxxhash
+  - [libxxhash-0.8.1-1-x86_64.pkg.tar.zst](https://mirror.msys2.org/msys/x86_64/libxxhash-0.8.1-1-x86_64.pkg.tar.zst)
+    - SHA256: `9c8e2cb592bd78e8d10d6c896357d672999cab7c459e2b13220f572446105aef`
+- https://packages.msys2.org/package/libopenssl
+  - [libopenssl-3.1.0-1-x86_64.pkg.tar.zst](https://mirror.msys2.org/msys/x86_64/libopenssl-3.1.0-1-x86_64.pkg.tar.zst)
+    - SHA256: `fa76246190fec6850623e73a69660d8394646b671ea9117748820a5fe937687e`
+- Copy `rsync` executable to `/usr/bin`
+- Try to run rsync first and let it complain about missing DLL(s)
+- Copy missing DLL(s) to `/usr/bin` one-by-one until `rsync` works
+
+### Git config
+
+- https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration
+
+```bash
+git config --system core.autocrlf false
+git config --global user.email user@email.com
+git config --global user.name "First Last"
+```
+
+---
+
 ## Git for Windows SDK
 
 - Read the ["Installing the SDK" section of the technical overview](https://github.com/git-for-windows/git/wiki/Technical-overview#installing-the-sdk)
