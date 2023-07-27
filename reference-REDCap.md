@@ -14,6 +14,7 @@ The uninitiated might have some difficulty appreciating some of the pointers her
     - _e.g._ `"[My Fancy Tag] My Awesome Project" -> "MyFancyTagMyAwesomeProject"`
   - let `<report name>` refer to <ins>**the first 20 characters**</ins> of the report name with non-alphanumeric characters (including spaces) removed
     - _e.g._ `"Really Important Report of Important Instrument V2.5" -> "ReallyImportantRepor"`
+    - _e.g._ `"Important Report Ver 2.5 (some extra words)" -> "ImportantReportVer25"`
   - `<timestamp>` is of the format `YYYY-mm-dd_HHMM`
   - `<project name>-<report name>-DATA-<timestamp>.csv` for raw data
   - `<project name>-<report name>-DATA_LABELS-<timestamp>.csv` for labels
