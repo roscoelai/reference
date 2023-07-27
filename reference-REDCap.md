@@ -6,6 +6,20 @@ The uninitiated might have some difficulty appreciating some of the pointers her
 
 ## Instrument Design
 
+### [UPDATE] Report gotchas
+- Reports downloaded from REDCap will have auto-generated file names
+- At least for CSV files, the rules seem to be as follows:
+  - let `<project name>` refer to the project name with non-alphanumeric characters (including spaces) removed
+    - Character limits, if any, are not known at the moment
+    - _e.g._ `"[My Fancy Tag] My Awesome Project" -> "MyFancyTagMyAwesomeProject"`
+  - let `<report name>` refer to <ins>**the first 20 characters**</ins> of the report name with non-alphanumeric characters (including spaces) removed
+    - _e.g._ `"Really Important Report of Important Instrument V2.5" -> "ReallyImportantRepor"`
+  - `<timestamp>` is of the format `YYYY-mm-dd_HHMM`
+  - `<project name>-<report name>-DATA-<timestamp>.csv` for raw data
+  - `<project name>-<report name>-DATA_LABELS-<timestamp>.csv` for labels
+  - There will be no spaces
+  - Any distinguishing features, especially <ins>**version numbers**</ins>, should be <ins>within the first 20 characters</ins> of the report name (not counting spaces), otherwise all reports downloaded will have the same name and may need to be manually renamed
+
 ### `@DEFAULT` gotchas
 - Default values are only loaded when a _brand new_ form record is created
 - Default values will not be loaded on a pre-existing form record
