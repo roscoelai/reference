@@ -7,17 +7,19 @@ The uninitiated might have some difficulty appreciating some of the pointers her
 ## Reports Organization
 
 ### [NEW] Report gotchas
+- Things to consider when deciding the report names
 - Reports downloaded from REDCap will have auto-generated file names
 - At least for CSV files, the rules seem to be as follows:
-  - let `<project name>` refer to the project name with non-alphanumeric characters (including spaces) removed
-    - Character limits, if any, are not known at the moment
-    - _e.g._ `"[My Fancy Tag] My Awesome Project" -> "MyFancyTagMyAwesomeProject"`
-  - let `<report name>` refer to <ins>**the first 20 characters**</ins> of the report name with non-alphanumeric characters (including spaces) removed
+  - let `<project name>` refer to the project name with non-alphanumeric characters (including spaces) removed, truncated to <ins>**the first 20 characters**</ins>
+    - _e.g._ `"[My Fancy Tag] My Awesome Project" -> "MyFancyTagMyAwesomeP"`
+  - let `<report name>` refer to the report name with non-alphanumeric characters (including spaces) removed, truncated to <ins>**the first 20 characters**</ins>
     - _e.g._ `"Really Important Report of Important Instrument V2.5" -> "ReallyImportantRepor"`
     - _e.g._ `"Important Report Ver 2.5 (some extra words)" -> "ImportantReportVer25"`
   - `<timestamp>` is of the format `YYYY-mm-dd_HHMM`
   - `<project name>-<report name>-DATA-<timestamp>.csv` for raw data
+    - `"MyFancyTagMyAwesomeP-ImportantReportVer25-DATA-2109-12-31_1159.csv"`
   - `<project name>-<report name>-DATA_LABELS-<timestamp>.csv` for labels
+    - `"MyFancyTagMyAwesomeP-ImportantReportVer25-DATA_LABELS-2109-12-31_1159.csv"`
   - There will be no spaces
   - Any distinguishing features, especially <ins>**version numbers**</ins>, should be <ins>within the first 20 characters</ins> of the report name (not counting spaces), otherwise all reports downloaded will have the same name and may need to be manually renamed
 
