@@ -2,11 +2,11 @@
 
 The uninitiated might have some difficulty appreciating some of the pointers here. To get initiated, consider this course on [Data Management for Clinical Research](https://www.coursera.org/learn/clinical-data-management) on Coursera offered by Vanderbilt University.
 
-<hr />
+---
 
-## Instrument Design
+## Reports Organization
 
-### [UPDATE] Report gotchas
+### [NEW] Report gotchas
 - Reports downloaded from REDCap will have auto-generated file names
 - At least for CSV files, the rules seem to be as follows:
   - let `<project name>` refer to the project name with non-alphanumeric characters (including spaces) removed
@@ -19,6 +19,10 @@ The uninitiated might have some difficulty appreciating some of the pointers her
   - `<project name>-<report name>-DATA_LABELS-<timestamp>.csv` for labels
   - There will be no spaces
   - Any distinguishing features, especially <ins>**version numbers**</ins>, should be <ins>within the first 20 characters</ins> of the report name (not counting spaces), otherwise all reports downloaded will have the same name and may need to be manually renamed
+
+---
+
+## Instrument Design
 
 ### `@DEFAULT` gotchas
 - Default values are only loaded when a _brand new_ form record is created
