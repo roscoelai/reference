@@ -4,6 +4,45 @@ The uninitiated might have some difficulty appreciating some of the pointers her
 
 ---
 
+## Survey Queue
+
+The following can be run from console after activating the Survey Queue set up pop-up window.
+
+### Find-and-replace
+
+```js
+const textareas = document.getElementsByTagName("textarea");
+
+const regex = / some regex pattern /;
+
+for (const el of textareas) {
+    if (el.innerHTML.match(regex)) {
+        // console.log(el.innerHTML);
+        el.innerHTML = el.innerHTML.replace(regex, "");
+    }
+}
+```
+
+### "Export" survey queue rules
+
+```js
+const els = document.querySelectorAll('[id^="sqtr-"]');
+const rows = [];
+const delimiter = "@@";
+
+for (const el of els) {
+    let title = el.querySelector("td:nth-child(2)");
+    let condlogic = el.querySelector('[id^="sqcondlogic-"]');
+    rows.push(`${title.innerText} ${delimiter} ${condlogic.innerHTML}`);
+}
+
+console.log(rows.join("\n"));
+```
+
+Then copy printout from console, paste in Notepad/Excel (+ use Text to Columns Wizard), find-and-replace `&gt;`, `&lt;`, _etc_...
+
+---
+
 ## Reports Organization
 
 ### [NEW] Report gotchas
