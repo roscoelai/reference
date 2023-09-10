@@ -10,13 +10,13 @@
 
 ## R
 
-- [Some useful snippets](reference-R.md)
+- [R Reference Page](reference-R.md)
 - R Markdown script template - [[template.Rmd](src/template.Rmd)]
 
 ## Bash
 
-- [Some useful snippets](reference-bash.md)
+- [Bash Reference Page](reference-bash.md)
 
 ## REDCap
 
-- [Some lamentations for REDCap](reference-REDCap.md)
+- [REDCap Reference Page](reference-REDCap.md)
