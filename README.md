@@ -1,5 +1,11 @@
 # Links
 
+## Must read
+
+> Not the only reference, but a good starting point
+
+[Nobel 2009 - A Quick Guide to Organizing Computational Biology Projects](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000424)
+
 ## General
 
 - [Setting up work environment](setup/README.md)
