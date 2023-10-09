@@ -115,16 +115,15 @@ git config --global user.name "First Last"
 ## Conda
 
 - [Mambaforge](https://github.com/conda-forge/miniforge/releases)
-  - [Mambaforge-22.9.0-2-Windows-x86_64.exe](https://github.com/conda-forge/miniforge/releases/download/22.9.0-2/Mambaforge-22.9.0-2-Windows-x86_64.exe)
-  - [Mambaforge-22.9.0-2-Windows-x86_64.exe.sha256](https://github.com/conda-forge/miniforge/releases/download/22.9.0-2/Mambaforge-22.9.0-2-Windows-x86_64.exe.sha256)
-  - SHA256 hash: `625ed0a94588dd7e38b108e907ed51c78bbaafdb7a50a699864033c963d47189`
-  - `echo export PATH='"${PATH}:/opt/mambaforge/Scripts"' >> ~/.bashrc`
+  - Discouraged as of September 2023
+
+- [Miniforge](https://github.com/conda-forge/miniforge/releases)
+  - As of `23.3.1-0`, identical to `mambaforge`
+  - Add `.../miniforge3/Scripts` to `PATH`
 
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-  - [Miniconda3-py310_22.11.1-1-Windows-x86_64.exe](https://repo.anaconda.com/miniconda/Miniconda3-py310_22.11.1-1-Windows-x86_64.exe)
-  - SHA256 hash: `2e3086630fa3fae7636432a954be530c88d0705fce497120d56e0f5d865b0d51`
-  - `echo export PATH='"${PATH}:/opt/miniconda3/Scripts"' >> ~/.bashrc`
-  - Install [mamba](https://github.com/mamba-org/mamba) if not using Mambaforge (**[not recommended](https://mamba.readthedocs.io/en/latest/installation.html)**)
+  - Remove `defaults` channel
+  - Install `mamba`
     - `conda install mamba -n base -c conda-forge`
 
 - Configuration(s)
@@ -132,9 +131,9 @@ git config --global user.name "First Last"
 ```bash
 conda init cmd.exe
 # conda init bash
-conda config --append channels defaults
-conda config --add channels bioconda
+conda config --remove channels defaults
 conda config --add channels conda-forge
+# conda config --append channels bioconda
 conda config --set channel_priority strict
 conda config --set auto_activate_base false
 conda config --show
@@ -143,11 +142,11 @@ conda config --show
 - Create environment(s)
 
 ```bash
-# conda activate base
-mamba create -n ds jupyterlab nodejs openpyxl matplotlib seaborn scikit-learn  # python ipython numpy pandas
-mamba create -n mne jupyterlab nodejs mne
-mamba create -n pytorch jupyterlab nodejs pytorch
-mamba create -n aio aiohttp aiodns brotli git sqlite uvloop
+# Examples:
+mamba create -n ds jupyterlab pandas polars seaborn scikit-learn
+mamba create -n mne jupyterlab mne
+mamba create -n pytorch jupyterlab pytorch
+mamba create -n aio aiohttp
 mamba create -n main git python screen sqlite
 mamba create -n r-h2o r-dbi r-h2o r-mice r-optparse r-sqlite
 ```
