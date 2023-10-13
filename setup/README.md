@@ -3,14 +3,13 @@
 > _On a Windows machine_
 
 - 2 choices:
-  - PortableGit
+  - PortableGit (+MSYS2)
   - Git for Windows SDK
 - Choose PortableGit for this round
   - PortableGit is lighter, but has no package manager
-  - Programs that do not come bundled will have to be obtained manually
-  - Top on the list (_must have_) is `rsync`
-  - Others might include: `Python`, `Poppler`, `pngquant`, `ImageMagick`, `FFmpeg`, `GitHub CLI` (pls go learn SSH instead)
-  - Updates will also be manual
+  - Programs that do not come bundled will have to be obtained manually (or with MSYS2)
+  - Top on the list are: `rclone`, `rsync`
+  - Others might include: `Python`, `Poppler`, `pngquant`, `ImageMagick`, `FFmpeg`, `GitHub CLI`
 
 ## PortableGit
 
@@ -114,40 +113,34 @@ git config --global user.name "First Last"
 
 ## Conda
 
-- [Mambaforge](https://github.com/conda-forge/miniforge/releases)
-  - Discouraged as of September 2023
-
 - [Miniforge](https://github.com/conda-forge/miniforge/releases)
-  - As of `23.3.1-0`, identical to `mambaforge`
-  - Add `.../miniforge3/Scripts` to `PATH`
+  - As of `23.3.1-0`, identical to Mambaforge
+  - Mambaforge discouraged as of September 2023
+  - Add `path/to/miniforge3/condabin` to user `PATH`
 
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-  - Remove `defaults` channel
-  - Install `mamba`
-    - `conda install mamba -n base -c conda-forge`
+  - Remove `defaults` channel: `conda config --remove channels defaults`
+  - Add `conda-forge` channel: `conda config --add channels conda-forge`
+  - Install `mamba`: `conda install mamba -n base`
 
-- Configuration(s)
+- Other configurations
 
 ```bash
-conda init cmd.exe
-# conda init bash
-conda config --remove channels defaults
-conda config --add channels conda-forge
-# conda config --append channels bioconda
+conda init cmd.exe  # (or bash)
+conda config --append channels bioconda
 conda config --set channel_priority strict
 conda config --set auto_activate_base false
-conda config --show
 ```
 
 - Create environment(s)
 
 ```bash
 # Examples:
+mamba create -n main git pydicom python screen sqlite
 mamba create -n ds jupyterlab pandas polars seaborn scikit-learn
+mamba create -n aio aiohttp
 mamba create -n mne jupyterlab mne
 mamba create -n pytorch jupyterlab pytorch
-mamba create -n aio aiohttp
-mamba create -n main git python screen sqlite
 mamba create -n r-h2o r-dbi r-h2o r-mice r-optparse r-sqlite
 ```
 
