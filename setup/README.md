@@ -75,11 +75,11 @@ Learn to use [RStudio Projects](https://support.rstudio.com/hc/en-us/articles/20
 
 ## Java
 
-Might be necessary for H2O.
+Might be necessary for H2O (only Java versions 8-17 are supported).
 
 - [Java JDK](https://jdk.java.net)
-  - `winget` might not be possible
-  - Add `C:\...\jdk-x.x.x\bin` to `PATH`
+- [OpenJDK Archive](https://jdk.java.net/archive)
+- Add `C:\...\jdk-x.x.x\bin` to `PATH`
 
 ---
 
