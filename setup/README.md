@@ -1,29 +1,121 @@
 # Setup Working Environment
 
-> _On a Windows machine_
+This is primarily about managing tools for work on a Windows machine. Ideally a package manager will be able to handle this, but it might be necessary to combine a few, and still handle some tools manually. Phasing out [PortableGit](https://git-scm.com/download/win#:~:text=64%2Dbit%20Git%20for%20Windows%20Portable) from the discussion here, but it might still be useful if the bundled tools are adequate for the task.
 
-- 2 choices:
-  - PortableGit (+MSYS2)
-  - Git for Windows SDK
-- Choose PortableGit for this round
-  - PortableGit is lighter, but has no package manager
-  - Programs that do not come bundled will have to be obtained manually (or with MSYS2)
-  - Top on the list are: `rclone`, `rsync`
-  - Others might include: `Python`, `Poppler`, `pngquant`, `ImageMagick`, `FFmpeg`, `GitHub CLI`
+### Package managers
+- `winget` (check it out, but it may not solve all problems)
+- `pacman` (from MSYS2)
+  - <sup><sub>or [Git for Windows SDK](https://gitforwindows.org/#:~:text=Git%20for%20Windows%20SDK), avoid for now</sub></sup>
+- `conda`/`mamba` (from Miniforge3)
+- MSYS2 and Miniforge3 may be managed by `winget`
 
-## PortableGit
+Some tools that may be needed:
+```
+Rclone
+Rsync
+Python
+Git
+GitHub CLI
+Poppler
+pngquant
+Ghostscript
+ImageMagick
+FFmpeg
+```
 
-Where you choose to put things, and how you manage user environment variables, is up to you.
+---
 
-- https://git-scm.com/download/win
-- [PortableGit-2.40.0-64-bit.7z.exe](https://github.com/git-for-windows/git/releases/download/v2.40.0.windows.1/PortableGit-2.40.0-64-bit.7z.exe)
+## Conda
 
-### File hash in PowerShell
+- [Miniforge3](https://github.com/conda-forge/miniforge#:~:text=Windows,x86_64)
+  - Use `winget` if possible
+  - Add `C:\...\path\to\miniforge3\condabin` to `PATH`
+- <sup><sub>[Miniconda](https://docs.conda.io/projects/miniconda/en/latest), avoid for now</sub></sup>
+
+Config:
+
+```
+conda config --set auto_activate_base false
+```
+
+Channel management:
+
+```
+conda config --append channels bioconda
+conda config --set channel_priority strict
+```
+
+Create environment(s):
+
+```
+mamba create -n main git pydicom python screen sqlite
+mamba create -n ds jupyterlab pandas polars seaborn scikit-learn
+mamba create -n ds jupyterlab pandas polars pyarrow pyreadstat scikit-learn seaborn xlsx2csv xlsxwriter pytorch torchvision torchaudio cpuonly -c pytorch
+mamba create -n aio aiohttp
+mamba create -n mne jupyterlab mne
+mamba create -n r-h2o r-dbi r-h2o r-mice r-optparse r-sqlite
+```
+
+---
+
+## R
+
+- [R](https://cran.r-project.org/bin/windows/base/)
+  - Use `winget` if possible
+- [RStudio](https://posit.co/download/rstudio-desktop/#:~:text=Zip/Tarballs)
+  - `winget` might not be possible
+  - Might need to edit `%USERPROFILE%\AppData\Roaming\RStudio\config.json`
+    - Under `platform > windows > rExecutablePath`
+    - Set `C:/.../R-x.x.x/bin/x64/Rterm.exe` (can use forward slashes, or double back slashes)
+- <sup><sub>[Rtools](https://cran.r-project.org/bin/windows/Rtools), avoid for now</sub></sup>
+
+Learn to use [RStudio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) to avoid headaches due to working directory/path issues (but it will not solve all problems).
+
+---
+
+## Java
+
+Might be necessary for H2O.
+
+- [Java JDK](https://jdk.java.net)
+  - `winget` might not be possible
+  - Add `C:\...\jdk-x.x.x\bin` to `PATH`
+
+---
+
+## SSH
+
+- If you forget everything, start from here: https://calmcode.io/ssh/introduction.html
+- https://docs.github.com/en/authentication/connecting-to-github-with-ssh
+
+```bash
+man ssh
+man ssh_config
+```
+
+---
+
+## Out of place
+
+### How to calculate file hash in PowerShell
 
 ```powershell
-Get-Help Get-FileHash
-Get-FileHash .\path\to\file.ext -Algorithm MD5
+Get-FileHash [-Path] -Algorithm MD5
 ```
+
+### Git config
+
+- https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration
+
+```bash
+git config --system core.autocrlf false
+git config --global user.email user@email.com
+git config --global user.name "First Last"
+```
+
+---
+
+## Legacy
 
 ### Rsync
 
@@ -42,19 +134,7 @@ Get-FileHash .\path\to\file.ext -Algorithm MD5
 - Try to run rsync first and let it complain about missing DLL(s)
 - Copy missing DLL(s) to `/usr/bin` one-by-one until `rsync` works
 
-### Git config
-
-- https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration
-
-```bash
-git config --system core.autocrlf false
-git config --global user.email user@email.com
-git config --global user.name "First Last"
-```
-
----
-
-## Git for Windows SDK
+### Git for Windows SDK
 
 - Read the ["Installing the SDK" section of the technical overview](https://github.com/git-for-windows/git/wiki/Technical-overview#installing-the-sdk)
   - [Git for Windows SDK](https://github.com/git-for-windows/build-extra/releases)
@@ -100,91 +180,7 @@ pacman -Rs mingw-w64-x86_64-xpdf-tools
 pacman -S mingw-w64-x86_64-github-cli mingw-w64-x86_64-imagemagick mingw-w64-x86_64-pngquant mingw-w64-x86_64-poppler tree
 ```
 
-- Set some configs for git
-
-```bash
-git config --global user.email user@email.com
-git config --global user.name "First Last"
-```
-
 - If there are error messages on welcome, have a look at `/etc/profile.d/git-sdk.sh`
-
----
-
-## Conda
-
-- [Miniforge](https://github.com/conda-forge/miniforge/releases)
-  - As of `23.3.1-0`, identical to Mambaforge
-  - Mambaforge discouraged as of September 2023
-  - Add `path/to/miniforge3/condabin` to user `PATH`
-
-- [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-  - Remove `defaults` channel: `conda config --remove channels defaults`
-  - Add `conda-forge` channel: `conda config --add channels conda-forge`
-  - Install `mamba`: `conda install mamba -n base`
-
-- Other configurations
-
-```bash
-conda init cmd.exe  # (or bash)
-conda config --append channels bioconda
-conda config --set channel_priority strict
-conda config --set auto_activate_base false
-```
-
-- Create environment(s)
-
-```bash
-# Examples:
-mamba create -n main git pydicom python screen sqlite
-mamba create -n ds jupyterlab pandas polars seaborn scikit-learn
-mamba create -n aio aiohttp
-mamba create -n mne jupyterlab mne
-mamba create -n pytorch jupyterlab pytorch
-mamba create -n r-h2o r-dbi r-h2o r-mice r-optparse r-sqlite
-```
-
----
-
-## R
-
-- [CRAN](https://cran.r-project.org)
-  - [R-4.2.2-win.exe](https://cran.r-project.org/bin/windows/base/R-4.2.2-win.exe)
-  - [md5sum.R-4.2.2.txt](https://cran.r-project.org/bin/windows/base/md5sum.R-4.2.2.txt)
-  - MD5 hash: `eaa06020ec663918c580050038f1d1d5`
-  - `echo export PATH='"${PATH}:/opt/R-4.2.2/bin/x64"' >> ~/.bashrc`
-
-- [RStudio](https://posit.co/download/rstudio-desktop)
-  - [RStudio-2022.12.0-353.zip](https://download1.rstudio.org/electron/windows/RStudio-2022.12.0-353.zip)
-  - SHA256 hash: `8c351ee495736d5d6352b437f329d5ce99daa3f7a112dd96a838a49073d72bc8`
-  - `echo export PATH='"${PATH}:/opt/RStudio-2022.12.0-353"' >> ~/.bashrc`
-
-- (Optional) [Rtools42 for Windows](https://cran.r-project.org/bin/windows/Rtools/rtools42/rtools.html)
-  - [rtools42-5355-5357.exe](https://cran.r-project.org/bin/windows/Rtools/rtools42/files/rtools42-5355-5357.exe)
-
-- [Using RStudio Projects](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects)
-
----
-
-## Java
-
-- [Java JDK](https://jdk.java.net)
-  - [openjdk-19.0.1_windows-x64_bin.zip](https://download.java.net/java/GA/jdk19.0.1/afdd2e245b014143b62ccb916125e3ce/10/GPL/openjdk-19.0.1_windows-x64_bin.zip)
-  - [openjdk-19.0.1_windows-x64_bin.zip.sha256](https://download.java.net/java/GA/jdk19.0.1/afdd2e245b014143b62ccb916125e3ce/10/GPL/openjdk-19.0.1_windows-x64_bin.zip.sha256)
-  - SHA256 hash: `adb1a33c07b45c39b926bdeeadf800f701be9c3d04e0deb543069e5f09856185`
-  - `echo export PATH='"/opt/openjdk-19.0.1/bin:${PATH}"' >> ~/.bashrc`
-
----
-
-## SSH
-
-- If you forgot everything about SSH, start from here: https://calmcode.io/ssh/introduction.html
-- https://docs.github.com/en/authentication/connecting-to-github-with-ssh
-
-```bash
-man ssh
-man ssh_config
-```
 
 ---
 
