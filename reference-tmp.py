@@ -1,10 +1,12 @@
 import doctest
+import os
+from typing import Callable
 
 import polars as pl
 import pyreadstat
 import xlsxwriter
 
-def dct_to_redcap_opts(dct: dict[int | float | str, str]) -> str:
+def dct_to_redcap_opts(dct: dict[(int | float | str), str]) -> str:
     """
     Convert dictionary mapping values to labels to a string, REDCap format.
     If value is a float, try to convert to int.
@@ -33,6 +35,9 @@ def safe_to_int(df: pl.DataFrame) -> pl.DataFrame:
 
     >>> safe_to_int(pl.DataFrame({'a': [1.0, 2.1], 'b': [1.0, 2.0]})).dtypes
     [Float64, Int64]
+
+    >>> safe_to_int(pl.DataFrame({'a': [None, None], 'b': [1.0, 2.0]})).dtypes
+    [Int64, Int64]
     """
     assert isinstance(df, pl.DataFrame)
     is_ok = lambda s: s.dtype in pl.NUMERIC_DTYPES and s.cast(int).eq(s).all()
@@ -68,5 +73,23 @@ def write_excel_wb(dfs: dict[str, pl.DataFrame], path: str) -> None:
                            dtype_formats={pl.INTEGER_DTYPES: "#0"},
                            column_widths=cw)
     print(f"File written: {path}")
+
+def sav_to_xl(src_path: str, dest_dir: str, func: Callable | None=None) -> None:
+    """
+    Read a SAV file and write out the corresponding XLSX file.
+    The original filename will be retained.
+    """
+    df, dd = read_sav_to_dfdd(src_path)
+    if func:
+        df, dd = func(df, dd)
+    stem, ext = os.path.splitext(os.path.basename(src_path))
+    dest_path = f"{dest_dir}/{stem}.xlsx"
+    os.path.isdir(dest_dir) or os.makedirs(dest_dir)
+    write_excel_wb({"Data": df, "DataDict": dd}, dest_path)
+
+def savs_to_xls(src_dir: str, dest_dir: str, func: Callable | None=None) -> None:
+    for de in os.scandir(src_dir):
+        if de.name.endswith(".sav"):
+            sav_to_xl(de.path, dest_dir, func)
 
 doctest.testmod()
