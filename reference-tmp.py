@@ -52,8 +52,42 @@ def read_sav_to_dfdd(path: str) -> (pl.DataFrame, pl.DataFrame):
     return df, dd
 
 def drop_empty_cols(df: pl.DataFrame) -> pl.DataFrame:
+    """
+    >>> drop_empty_cols(pl.DataFrame({'a': [1], 'b': [2]})).columns
+    ['a', 'b']
+    
+    >>> drop_empty_cols(pl.DataFrame({'a': [1, 2], 'b': [None] * 2})).columns
+    ['a']
+    """
     assert isinstance(df, pl.DataFrame)
     return df[[s.name for s in df if s.null_count() < df.height]]
+
+def drop_uniform_cols(df: pl.DataFrame) -> pl.DataFrame:
+    """
+    Remove columns where all values are the same.
+    
+    >>> drop_uniform_cols(pl.DataFrame({'a': [1, 2], 'b': [3, 4]})).columns
+    ['a', 'b']
+    
+    >>> drop_uniform_cols(pl.DataFrame({'a': [1, 2], 'b': [None] * 2})).columns
+    ['a']
+    
+    >>> drop_uniform_cols(pl.DataFrame({'a': [1, 1], 'b': [3, 4]})).columns
+    ['b']
+    """
+    assert isinstance(df, pl.DataFrame)
+    return df[[s.name for s in df if s.n_unique() > 1]]
+
+def drop_empty_rows(df: pl.DataFrame, expr: pl.Expr=pl.all()) -> pl.DataFrame:
+    """
+    >>> drop_empty_rows(pl.DataFrame({'a': [None, 1], 'b': [2, 3]})).height
+    2
+    
+    >>> drop_empty_rows(pl.DataFrame({'a': [None, 1], 'b': [None, 3]})).height
+    1
+    """
+    assert isinstance(df, pl.DataFrame)
+    return df.filter(~pl.all_horizontal(expr.is_null()))
 
 def write_excel_wb(dfs: dict[str, pl.DataFrame], path: str) -> None:
     """
@@ -74,6 +108,8 @@ def write_excel_wb(dfs: dict[str, pl.DataFrame], path: str) -> None:
                            column_widths=cw)
     print(f"File written: {path}")
 
+# -----------------------------------------------------------------------------
+
 def sav_to_xl(src_path: str, dest_dir: str, func: Callable | None=None) -> None:
     """
     Read a SAV file and write out the corresponding XLSX file.
@@ -92,4 +128,10 @@ def savs_to_xls(src_dir: str, dest_dir: str, func: Callable | None=None) -> None
         if de.name.endswith(".sav"):
             sav_to_xl(de.path, dest_dir, func)
 
-doctest.testmod()
+# -----------------------------------------------------------------------------
+
+def main() -> None:
+    print(doctest.testmod())
+
+if __name__ == "__main__":
+    main()
