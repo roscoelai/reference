@@ -15,19 +15,35 @@ def impute_hd(A: np.ndarray,
     :param round_to_int: round imputed values to nearest whole number.
     :returns: the original matrix with eligible missing values imputed.
 
-    >>> print(impute_hd(np.array([[1, 2], [1, 9], [1, np.nan]]), 1))
-    [[1. 2.]
-     [1. 9.]
-     [1. 6.]]
+    >>> impute_hd(np.array([[1,      9],
+    ...                     [1, np.nan]]), 1)
+    array([[ 1.,  9.],
+           [ 1., nan]])
 
-    >>> print(impute_hd(np.array([[1, 2], [1, 9], [1, np.nan]]), 0))
-    [[ 1.  2.]
-     [ 1.  9.]
-     [ 1. nan]]
+    >>> impute_hd(np.array([[1,      2],
+    ...                     [1,      9],
+    ...                     [1, np.nan]]))
+    array([[ 1.,  2.],
+           [ 1.,  9.],
+           [ 1., nan]])
 
-    >>> print(impute_hd(np.array([[1, 9], [1, np.nan]]), 1))
-    [[ 1.  9.]
-     [ 1. nan]]
+    >>> impute_hd(np.array([[1,      2],
+    ...                     [1,      9],
+    ...                     [1, np.nan]]), 1)
+    array([[1., 2.],
+           [1., 9.],
+           [1., 6.]])
+
+    >>> impute_hd(np.array([[ 1,      2,      3],
+    ...                     [ 4,      5,      6],
+    ...                     [ 7,      8, np.nan],
+    ...                     [10, np.nan,     12],
+    ...                     [13,     14,     15]]), 1)
+    array([[ 1.,  2.,  3.],
+           [ 4.,  5.,  6.],
+           [ 7.,  8.,  6.],
+           [10., 14., 12.],
+           [13., 14., 15.]])
     """
     assert isinstance(A, np.ndarray), "Input must be a numpy.ndarray."
     assert not np.isinf(A).any(), "Infinite values not supported."
@@ -72,7 +88,7 @@ def impute_hd(A: np.ndarray,
 
     # For each imputable row, find the closest row(s) (i.e. minimum ss) among 
     # the complete rows. If there are multiple closest rows, take the average.
-    is_min_ss = np.isclose(ss, ss.min(axis=1))
+    is_min_ss = np.isclose(ss, ss.min(axis=1, keepdims=True))
     E = np.array([C[mask].mean(axis=0) for mask in is_min_ss])
     if round_to_int:
         E = np.round(E)
