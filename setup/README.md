@@ -50,7 +50,7 @@ Create environment(s):
 ```
 mamba create -n main git pydicom python screen sqlite
 mamba create -n ds jupyterlab pandas polars seaborn scikit-learn
-mamba create -n ds -c pytorch -c h2oai jupyterlab pandas polars pyarrow pyreadstat scikit-learn seaborn xlsx2csv xlsxwriter pytorch torchvision torchaudio cpuonly h2o
+mamba create -n ds -c pytorch -c fastexecl h2oai jupyterlab pandas polars pyarrow pyreadstat scikit-learn seaborn xlsxwriter pytorch torchvision torchaudio cpuonly h2o
 mamba create -n aio aiohttp
 mamba create -n mne jupyterlab mne
 mamba create -n r-h2o r-dbi r-h2o r-mice r-optparse r-sqlite
