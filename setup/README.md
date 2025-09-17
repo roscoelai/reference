@@ -6,72 +6,81 @@ This page will focus on Windows environments.
 
 ## Package managers
 
-- [WinGet](https://learn.microsoft.com/en-us/windows/package-manager/winget/)
-  - For what works
-    - Rclone
-    - Git
+- WinGet
+  - Can be temperamental, use for what works
     - VS Code
-- [micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html)
-  - For data science tools
-    - Python and friends 🙂
 - [MSYS2](https://www.msys2.org/)
-  - For everything else
+  - UNIX/Bash
     - Vim
+    - Rclone
     - Rsync
+    - Git
     - GitHub CLI
-    - Poppler
-    - pngquant
-    - Ghostscript
-    - ImageMagick
-    - FFmpeg
-  - Comes with standard UNIX tools
-    - If only this is required, consider [PortableGit](https://git-scm.com/download/win#:~:text=64%2Dbit%20Git%20for%20Windows%20Portable)
+    - Micromamba
+    - Others:
+      - Poppler
+      - pngquant
+      - Ghostscript
+      - ImageMagick
+      - FFmpeg
 - Manual
   - R
   - RStudio
-- [Git for Windows SDK](https://gitforwindows.org/#:~:text=Git%20for%20Windows%20SDK)
-  - Avoid for now
 
 ---
 
 ### MSYS2
 
-In `/etc/pacman.conf`, comment out all repositories except `[ucrt64]` and `[msys]`, then run one or more of the following:
+- Edit `/etc/pacman.conf`:
+  - Comment out all repositories except `[ucrt64]` and `[msys]`
+- Add to `PATH`:
+  - `...\msys64\ucrt64\bin`
+  - `...\msys64\usr\bin`
 
 ```bash
 pacman -Syu
 
 # Minimalist
-pacman -S make mingw-w64-ucrt-x86_64-github-cli rsync tree vim
+pacman -S git vim
 
-# More
-pacman -S make mingw-w64-ucrt-x86_64-github-cli mingw-w64-ucrt-x86_64-imagemagick mingw-w64-ucrt-x86_64-pngquant mingw-w64-ucrt-x86_64-poppler rsync tree vim
+# More 1
+pacman -S make git mingw-w64-ucrt-x86_64-github-cli mingw-w64-ucrt-x86_64-rclone rsync vim
+
+# More 2
+pacman -S make git mingw-w64-ucrt-x86_64-github-cli mingw-w64-ucrt-x86_64-rclone mingw-w64-ucrt-x86_64-imagemagick mingw-w64-ucrt-x86_64-pngquant mingw-w64-ucrt-x86_64-poppler rsync tree vim
 ```
-
-Add `...\msys64\ucrt64\bin` and `...\msys64\usr\bin` to user `PATH` environment variable.
 
 ---
 
-### Mamba/Conda
+### Git config
 
-No need to worry about `base` env if using `micromamba`. `micromamba shell init` will... make it work somehow without modifying user `PATH`.
+- https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration
 
-Some environments:
-
-```
-mamba create -n main git pydicom python screen sqlite
-mamba create -n aio aiohttp
-mamba create -n ds fastexcel jupyterlab pandas polars pyarrow pyreadstat scikit-learn seaborn xlsxwriter
-mamba create -n ds2 -c h2oai -c pytorch fastexcel jupyterlab pandas polars pyarrow pyreadstat scikit-learn seaborn xlsxwriter h2o pytorch torchvision torchaudio cpuonly
-mamba create -n mne jupyterlab mne
-mamba create -n rh2o r-dbi r-h2o r-mice r-optparse r-sqlite
+```bash
+git config --system core.autocrlf false
+git config --global user.email user@email.com
+git config --global user.name "First Last"
 ```
 
-Add channels (optional; just use the `-c` flag when needed):
+---
+
+### Micromamba
+
+Channels:
 
 ```
-conda config --append channels bioconda
-conda config --set channel_priority strict
+micromamba config append channels conda-forge
+micromamba config append channels nodefaults
+micromamba config set channel_priority strict
+```
+
+Environments:
+
+```
+micromamba create -n main git pydicom python screen sqlite
+micromamba create -n aio aiohttp
+micromamba create -n ds fastexcel jupyterlab pandas polars scikit-learn seaborn xlsxwriter
+micromamba create -n ds2 -c h2oai -c pytorch fastexcel jupyterlab pandas polars pyarrow pyreadstat scikit-learn seaborn xlsxwriter h2o pytorch torchvision torchaudio cpuonly
 ```
 
 ---
@@ -89,16 +98,6 @@ Learn to use [RStudio Projects](https://support.rstudio.com/hc/en-us/articles/20
 
 ---
 
-### Java
-
-Might be necessary for H2O (only Java versions 8-17 are supported).
-
-- [Java JDK](https://jdk.java.net)
-- [OpenJDK Archive](https://jdk.java.net/archive)
-- Add `C:\...\jdk-x.x.x\bin` to `PATH`
-
----
-
 ### SSH
 
 - If you forget everything, start from here: https://calmcode.io/ssh/introduction.html
@@ -111,22 +110,10 @@ man ssh_config
 
 ---
 
-### Out of place
-
-#### How to calculate file hash in PowerShell
+### File hash in PowerShell
 
 ```powershell
 Get-FileHash [-Path] -Algorithm MD5
-```
-
-#### Git config
-
-- https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration
-
-```bash
-git config --system core.autocrlf false
-git config --global user.email user@email.com
-git config --global user.name "First Last"
 ```
 
 ---
@@ -197,6 +184,16 @@ pacman -S mingw-w64-x86_64-github-cli mingw-w64-x86_64-imagemagick mingw-w64-x86
 ```
 
 - If there are error messages on welcome, have a look at `/etc/profile.d/git-sdk.sh`
+
+---
+
+### Java
+
+Might be necessary for H2O (only Java versions 8-17 are supported).
+
+- [Java JDK](https://jdk.java.net)
+- [OpenJDK Archive](https://jdk.java.net/archive)
+- Add `C:\...\jdk-x.x.x\bin` to `PATH`
 
 ---
 
