@@ -44,10 +44,10 @@ pacman -Syu
 pacman -S git vim
 
 # More 1
-pacman -S make git mingw-w64-ucrt-x86_64-github-cli mingw-w64-ucrt-x86_64-rclone rsync vim
+pacman -S git mingw-w64-ucrt-x86_64-github-cli mingw-w64-ucrt-x86_64-rclone mingw-w64-ucrt-x86_64-python-uv rsync vim
 
 # More 2
-pacman -S make git mingw-w64-ucrt-x86_64-github-cli mingw-w64-ucrt-x86_64-rclone mingw-w64-ucrt-x86_64-imagemagick mingw-w64-ucrt-x86_64-pngquant mingw-w64-ucrt-x86_64-poppler rsync tree vim
+pacman -S make git mingw-w64-ucrt-x86_64-github-cli mingw-w64-ucrt-x86_64-rclone mingw-w64-ucrt-x86_64-imagemagick mingw-w64-ucrt-x86_64-pngquant mingw-w64-ucrt-x86_64-poppler mingw-w64-ucrt-x86_64-python-uv rsync tree vim
 ```
 
 ---
