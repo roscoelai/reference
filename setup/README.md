@@ -57,6 +57,7 @@ pacman -S make git mingw-w64-ucrt-x86_64-github-cli mingw-w64-ucrt-x86_64-rclone
 - https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration
 
 ```bash
+git config --global core.editor "vim"
 git config --system core.autocrlf false
 git config --global user.email user@email.com
 git config --global user.name "First Last"
